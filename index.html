@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NCP-BIP Inspection Scanner</title>
+  <!-- Library ZXing untuk Scan Barcode 1D Linear -->
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #f4f6f9; color: #333; padding-bottom: 30px; }
+    .header { background: #1565C0; color: white; padding: 16px; text-align: center; font-size: 18px; font-weight: bold; }
+    .container { padding: 16px; max-width: 600px; margin: 0 auto; }
+    .card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .card-title { font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #1565C0; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+    label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-top: 10px; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    textarea { height: 70px; resize: none; }
+    .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    .btn-primary { background: #1565C0; color: white; }
+    .btn-success { background: #2E7D32; color: white; }
+    .btn-secondary { background: #757575; color: white; }
+    
+    /* Counter Batch */
+    .batch-group { display: flex; gap: 8px; align-items: center; }
+    .batch-group select { width: 40%; }
+    .batch-group input { width: 40%; text-align: center; font-weight: bold; }
+    .batch-btn { width: 10%; padding: 10px; font-weight: bold; font-size: 16px; background: #e0e0e0; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; }
+
+    /* Video Scanner */
+    #scanner-container { width: 100%; position: relative; display: none; margin-top: 10px; }
+    #video { width: 100%; border-radius: 8px; background: #000; }
+    .scanner-laser { position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: red; box-shadow: 0 0 8px red; }
+
+    /* Photo Grid */
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .photo-item { border: 1px dashed #bbb; border-radius: 8px; padding: 8px; text-align: center; background: #fafafa; }
+    .photo-item label { font-size: 11px; margin-top: 0; }
+    .photo-item input[type="file"] { display: none; }
+    .photo-preview { width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; }
+    .btn-photo { background: #e3f2fd; color: #1565C0; border: 1px solid #1565C0; padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-top: 4px; display: block; }
+    
+    /* Status Badge */
+    .status-group { display: flex; gap: 10px; margin-top: 8px; }
+    .status-option { flex: 1; text-align: center; padding: 10px; border: 2px solid #ccc; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .status-option.selected-oke { border-color: #2E7D32; background: #E8F5E9; color: #2E7D32; }
+    .status-option.selected-ng { border-color: #C62828; background: #FFEBEE; color: #C62828; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="header">INSPEKSI NCP-BIP UNIT</div>
+
+  <div class="container">
+
+    <!-- LOGIN PANEL -->
+    <div id="panel-login" class="card">
+      <div class="card-title">Login Operator</div>
+      <label>Nama / NPK Operator:</label>
+      <input type="text" id="operator-name" placeholder="Masukkan Nama Operator">
+      <button class="btn btn-primary" onclick="login()">Masuk Aplikasi</button>
+    </div>
+
+    <!-- MAIN FORM -->
+    <div id="panel-main" class="hidden">
+      
+      <!-- Operator Info -->
+      <div class="card" style="padding:10px; background:#e3f2fd;">
+        <span style="font-size:13px;">Operator: <b id="display-operator">-</b></span>
+      </div>
+
+      <!-- STEP 1: SCAN VIN BARCODE 1D -->
+      <div class="card">
+        <div class="card-title">1. Scan Barcode VIN Mobil (1D Linear)</div>
+        <button class="btn btn-primary" onclick="startScanner()">📷 Buka Kamera Scan Barcode</button>
+        
+        <div id="scanner-container">
+          <video id="video"></video>
+          <div class="scanner-laser"></div>
+          <button class="btn btn-secondary" onclick="stopScanner()">Tutup Kamera</button>
+        </div>
+
+        <label>Hasil Scan Nomor VIN / NCP:</label>
+        <input type="text" id="vin-number" placeholder="Nomor VIN akan terisi otomatis" readonly>
+      </div>
+
+      <!-- STEP 2: BATCH NUMBER -->
+      <div class="card">
+        <div class="card-title">2. Input Batch Number</div>
+        <label>Format Batch (Cth: GSIDE26095 / GSIDK26055):</label>
+        <div class="batch-group">
+          <select id="batch-prefix">
+            <option value="GSIDE">GSIDE</option>
+            <option value="GSIDK">GSIDK</option>
+          </select>
+          <input type="number" id="batch-number" value="26095" onchange="saveBatchState()">
+          <button class="batch-btn" onclick="adjustBatch(-1)">-</button>
+          <button class="batch-btn" onclick="adjustBatch(1)">+</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: 10 FOTO PANEL MOBIL -->
+      <div class="card">
+        <div class="card-title">3. Upload Foto Panel Mobil (10 Slot)</div>
+        <div class="photo-grid">
+          
+          <div class="photo-item">
+            <label>1. Front Fender Right</label>
+            <button class="btn-photo" onclick="triggerCamera('ffr')">Ambil Foto</button>
+            <input type="file" id="file-ffr" accept="image/*" capture="environment" onchange="previewPhoto('ffr')">
+            <img id="img-ffr" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>2. Front Fender Left</label>
+            <button class="btn-photo" onclick="triggerCamera('ffl')">Ambil Foto</button>
+            <input type="file" id="file-ffl" accept="image/*" capture="environment" onchange="previewPhoto('ffl')">
+            <img id="img-ffl" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>3. Upper Roof</label>
+            <button class="btn-photo" onclick="triggerCamera('ur')">Ambil Foto</button>
+            <input type="file" id="file-ur" accept="image/*" capture="environment" onchange="previewPhoto('ur')">
+            <img id="img-ur" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>4. Lower Roof</label>
+            <button class="btn-photo" onclick="triggerCamera('lr')">Ambil Foto</button>
+            <input type="file" id="file-lr" accept="image/*" capture="environment" onchange="previewPhoto('lr')">
+            <img id="img-lr" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>5. Front Right Door</label>
+            <button class="btn-photo" onclick="triggerCamera('frd')">Ambil Foto</button>
+            <input type="file" id="file-frd" accept="image/*" capture="environment" onchange="previewPhoto('frd')">
+            <img id="img-frd" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>6. Front Left Door</label>
+            <button class="btn-photo" onclick="triggerCamera('fld')">Ambil Foto</button>
+            <input type="file" id="file-fld" accept="image/*" capture="environment" onchange="previewPhoto('fld')">
+            <img id="img-fld" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>7. Rear Right Door</label>
+            <button class="btn-photo" onclick="triggerCamera('rrd')">Ambil Foto</button>
+            <input type="file" id="file-rrd" accept="image/*" capture="environment" onchange="previewPhoto('rrd')">
+            <img id="img-rrd" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>8. Rear Left Door</label>
+            <button class="btn-photo" onclick="triggerCamera('rld')">Ambil Foto</button>
+            <input type="file" id="file-rld" accept="image/*" capture="environment" onchange="previewPhoto('rld')">
+            <img id="img-rld" class="photo-preview">
+          </div>
+
+          <div class="photo-item">
+            <label>9. Tailgate</label>
+            <button class="btn-photo" onclick="triggerCamera('tg')">Ambil Foto</button>
+            <input type="file" id="file-tg" accept="image/*" capture="environment" onchange="previewPhoto('tg')">
+            <img id="img-tg" class="photo-preview">
+          </div>
+
+          <div class="photo-item" style="border-color:#ffa726; background:#fff8e1;">
+            <label>10. Foto NG Tambahan (Opsional)</label>
+            <button class="btn-photo" onclick="triggerCamera('addNg')">Ambil Foto</button>
+            <input type="file" id="file-addNg" accept="image/*" capture="environment" onchange="previewPhoto('addNg')">
+            <img id="img-addNg" class="photo-preview">
+          </div>
+
+        </div>
+      </div>
+
+      <!-- STEP 4: STATUS & KETERANGAN -->
+      <div class="card">
+        <div class="card-title">4. Status Inspeksi & Keterangan</div>
+        <label>Status Inspeksi:</label>
+        <div class="status-group">
+          <div id="status-oke" class="status-option selected-oke" onclick="setStatus('OKE')">OKE</div>
+          <div id="status-ng" class="status-option" onclick="setStatus('NG')">NG</div>
+        </div>
+
+        <label>Keterangan / Detail Temuan:</label>
+        <textarea id="keterangan" placeholder="Masukkan keterangan jika ditemukan temuan NG..."></textarea>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <button class="btn btn-success" id="btn-submit" onclick="submitData()">🚀 KIRIM DATA INSPEKSI</button>
+      <div id="loading-text" style="display:none; text-align:center; margin-top:10px; font-weight:bold; color:#1565C0;">
+        ⏳ Sedang mengunggah foto ke Google Drive & menyimpan data...
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // ================================================================
+    // KONFIGURASI URL APPS SCRIPT WEB APP
+    // Ganti URL ini dengan URL Web App Apps Script milik Anda!
+    // ================================================================
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_wEhvszwvr5Tz5YaWKTT1qApLCEihioGrz5CRshazs0iTy1Kc1AVBg2igkBUSy5RF/exec";
+
+    let codeReader = null;
+    let selectedStatus = "OKE";
+    let photoData = {};
+
+    // Load state awal
+    window.onload = function() {
+      if(localStorage.getItem("operator")) {
+        document.getElementById("operator-name").value = localStorage.getItem("operator");
+      }
+      if(localStorage.getItem("batchPrefix")) {
+        document.getElementById("batch-prefix").value = localStorage.getItem("batchPrefix");
+      }
+      if(localStorage.getItem("batchNumber")) {
+        document.getElementById("batch-number").value = localStorage.getItem("batchNumber");
+      }
+    };
+
+    function login() {
+      const name = document.getElementById("operator-name").value.trim();
+      if(!name) { alert("Silakan masukkan nama operator!"); return; }
+      localStorage.setItem("operator", name);
+      document.getElementById("display-operator").innerText = name;
+      document.getElementById("panel-login").classList.add("hidden");
+      document.getElementById("panel-main").classList.remove("hidden");
+    }
+
+    // --- SCANNER BARCODE 1D (ZXing) ---
+    function startScanner() {
+      document.getElementById("scanner-container").style.display = "block";
+      codeReader = new ZXing.BrowserMultiFormatReader();
+      
+      codeReader.decodeFromVideoDevice(undefined, 'video', (result, err) => {
+        if (result) {
+          document.getElementById("vin-number").value = result.text;
+          stopScanner();
+          alert("Barcode VIN Berhasil Discan: " + result.text);
+        }
+      }).catch(err => console.error(err));
+    }
+
+    function stopScanner() {
+      if (codeReader) {
+        codeReader.reset();
+      }
+      document.getElementById("scanner-container").style.display = "none";
+    }
+
+    // --- BATCH NUMBER COUNTER ---
+    function adjustBatch(delta) {
+      let numInput = document.getElementById("batch-number");
+      let val = parseInt(numInput.value) || 0;
+      numInput.value = val + delta;
+      saveBatchState();
+    }
+
+    function saveBatchState() {
+      localStorage.setItem("batchPrefix", document.getElementById("batch-prefix").value);
+      localStorage.setItem("batchNumber", document.getElementById("batch-number").value);
+    }
+
+    // --- PHOTO HANDLING ---
+    function triggerCamera(id) {
+      document.getElementById("file-" + id).click();
+    }
+
+    function previewPhoto(id) {
+      const fileInput = document.getElementById("file-" + id);
+      const imgPreview = document.getElementById("img-" + id);
+      
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imgPreview.src = e.target.result;
+          imgPreview.style.display = "block";
+          
+          // Simpan string Base64 foto
+          const keyMapping = {
+            'ffr': 'frontFenderRight',
+            'ffl': 'frontFenderLeft',
+            'ur': 'upperRoof',
+            'lr': 'lowerRoof',
+            'frd': 'frontRightDoor',
+            'fld': 'frontLeftDoor',
+            'rrd': 'rearRightDoor',
+            'rld': 'rearLeftDoor',
+            'tg': 'tailgate',
+            'addNg': 'additionalNg'
+          };
+          
+          photoData[keyMapping[id]] = { base64: e.target.result };
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    }
+
+    // --- STATUS OKE / NG ---
+    function setStatus(status) {
+      selectedStatus = status;
+      const okeBtn = document.getElementById("status-oke");
+      const ngBtn = document.getElementById("status-ng");
+      
+      if (status === "OKE") {
+        okeBtn.className = "status-option selected-oke";
+        ngBtn.className = "status-option";
+      } else {
+        okeBtn.className = "status-option";
+        ngBtn.className = "status-option selected-ng";
+      }
+    }
+
+    // --- SUBMIT DATA ---
+    function submitData() {
+      const vin = document.getElementById("vin-number").value.trim();
+      if (!vin) {
+        alert("Silakan scan Barcode VIN terlebih dahulu!");
+        return;
+      }
+
+      const prefix = document.getElementById("batch-prefix").value;
+      const numVal = document.getElementById("batch-number").value;
+      const fullBatch = prefix + numVal;
+
+      const payload = {
+        operator: localStorage.getItem("operator"),
+        vin: vin,
+        batch: fullBatch,
+        photos: photoData,
+        status: selectedStatus,
+        keterangan: document.getElementById("keterangan").value
+      };
+
+      document.getElementById("btn-submit").disabled = true;
+      document.getElementById("loading-text").style.display = "block";
+
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // untuk menghindari kendala CORS pada Apps Script
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        alert("Data NCP-BIP & Foto Berhasil Dikirim!");
+        // Increment nomor batch untuk unit berikutnya
+        adjustBatch(1);
+        // Reset form
+        location.reload();
+      })
+      .catch(err => {
+        alert("Gagal mengirimi data: " + err);
+        document.getElementById("btn-submit").disabled = false;
+        document.getElementById("loading-text").style.display = "none";
+      });
+    }
+  </script>
+</body>
+</html>
