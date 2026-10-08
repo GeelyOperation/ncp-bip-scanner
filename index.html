@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>NC REPORT BIP</title>
-  <!-- ZXing Barcode Scanner Library -->
   <script src="https://unpkg.com/@zxing/library@latest"></script>
   <style>
     :root {
@@ -20,10 +19,8 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-    
     body { background-color: var(--ios-bg); color: var(--ios-text); padding-bottom: 40px; }
 
-    /* Header Nav iOS Style */
     .ios-navbar {
       position: sticky; top: 0; z-index: 100;
       background: rgba(255, 255, 255, 0.88);
@@ -35,155 +32,83 @@
 
     .container { padding: 16px; max-width: 480px; margin: 0 auto; }
 
-    /* LOGIN SCREEN DESIGN (NC REPORT BIP) */
-    .login-header {
-      text-align: center;
-      margin-top: 20px;
-      margin-bottom: 24px;
-    }
-
+    .login-header { text-align: center; margin-top: 20px; margin-bottom: 24px; }
     .geely-logo-card {
-      width: 100px; height: 100px;
-      background: #ffffff;
-      border-radius: 20px;
-      margin: 0 auto 16px auto;
-      display: flex; flex-direction: column;
+      width: 100px; height: 100px; background: #ffffff; border-radius: 20px;
+      margin: 0 auto 16px auto; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); border: 1px solid rgba(0,0,0,0.04);
     }
-    .geely-logo-icon {
-      width: 50px; height: auto; margin-bottom: 4px;
-    }
-    .geely-logo-text {
-      font-size: 9px; font-weight: 800; color: #d32f2f; letter-spacing: 0.5px; text-transform: uppercase;
-    }
+    .geely-logo-icon { width: 50px; height: auto; margin-bottom: 4px; }
+    .geely-logo-text { font-size: 9px; font-weight: 800; color: #d32f2f; letter-spacing: 0.5px; text-transform: uppercase; }
 
-    .app-main-title {
-      font-size: 24px; font-weight: 800; color: #111827; margin-bottom: 4px; letter-spacing: -0.5px;
-    }
-    .app-main-subtitle {
-      font-size: 13px; color: #6b7280; font-weight: 400;
-    }
+    .app-main-title { font-size: 24px; font-weight: 800; color: #111827; margin-bottom: 4px; letter-spacing: -0.5px; }
+    .app-main-subtitle { font-size: 13px; color: #6b7280; font-weight: 400; }
 
     .login-card {
-      background: var(--ios-card);
-      border-radius: 20px;
-      padding: 24px 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      border: 1px solid var(--ios-border);
+      background: var(--ios-card); border-radius: 20px; padding: 24px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04); border: 1px solid var(--ios-border);
     }
+    .login-card-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+    .login-card-sub { font-size: 12px; color: #8e8e93; line-height: 1.4; margin-bottom: 20px; }
 
-    .login-card-title {
-      font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px;
-    }
-    .login-card-sub {
-      font-size: 12px; color: #8e8e93; line-height: 1.4; margin-bottom: 20px;
-    }
-
-    /* Form Fields */
     .form-group { margin-bottom: 16px; }
     label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-bottom: 6px; }
     label .req { color: var(--ios-danger); }
     
     input[type="text"], select, textarea {
-      width: 100%; padding: 12px 14px;
-      background: #ffffff; border: 1px solid #d1d5db;
-      border-radius: 12px; font-size: 14px; color: var(--ios-text);
-      outline: none; transition: all 0.2s ease;
+      width: 100%; padding: 12px 14px; background: #ffffff; border: 1px solid #d1d5db;
+      border-radius: 12px; font-size: 14px; color: var(--ios-text); outline: none; transition: all 0.2s ease;
       appearance: none; -webkit-appearance: none;
     }
     select {
       background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%206b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-      background-size: 16px;
-      padding-right: 36px;
+      background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 36px;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--ios-primary); box-shadow: 0 0 0 3px rgba(24, 101, 207, 0.15); }
     textarea { height: 75px; resize: none; }
 
-    /* iOS Cards General */
     .ios-card {
-      background: var(--ios-card);
-      border-radius: 18px;
-      padding: 18px; margin-bottom: 16px;
-      border: 1px solid var(--ios-border);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+      background: var(--ios-card); border-radius: 18px; padding: 18px; margin-bottom: 16px;
+      border: 1px solid var(--ios-border); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
     }
-    .card-header {
-      font-size: 13px; font-weight: 700; text-transform: uppercase;
-      color: var(--ios-subtext); margin-bottom: 14px; letter-spacing: 0.2px;
-    }
+    .card-header { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--ios-subtext); margin-bottom: 14px; letter-spacing: 0.2px; }
 
-    /* Buttons */
     .ios-btn {
-      width: 100%; padding: 14px; border-radius: 12px; border: none;
-      font-size: 15px; font-weight: 600; cursor: pointer; text-align: center;
-      transition: all 0.2s ease;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-align: center; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .ios-btn:active { opacity: 0.8; transform: scale(0.98); }
     .btn-primary { background: var(--ios-primary); color: white; }
     .btn-success { background: var(--ios-success); color: white; }
     .btn-secondary { background: #e5e5ea; color: var(--ios-text); }
 
-    /* Scanner UI */
-    #scanner-container {
-      position: relative; display: none; margin-top: 12px;
-      border-radius: 14px; overflow: hidden; background: #000;
-    }
+    #scanner-container { position: relative; display: none; margin-top: 12px; border-radius: 14px; overflow: hidden; background: #000; }
     #video { width: 100%; height: 220px; object-fit: cover; }
-    .scanner-target {
-      position: absolute; top: 50%; left: 10%; right: 10%; height: 2px;
-      background: var(--ios-danger); box-shadow: 0 0 10px var(--ios-danger);
-    }
+    .scanner-target { position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: var(--ios-danger); box-shadow: 0 0 10px var(--ios-danger); }
 
-    /* Grid Foto */
     .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
-    .photo-box {
-      background: #f8fafc; border: 1px dashed #cbd5e1;
-      border-radius: 12px; padding: 10px; text-align: center; position: relative;
-    }
+    .photo-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 10px; text-align: center; position: relative; }
     .photo-box span { font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 8px; line-height: 1.2; }
     .photo-box input[type="file"] { display: none; }
-    .photo-preview {
-      width: 100%; height: 95px; object-fit: cover;
-      border-radius: 8px; margin-top: 6px; display: none; border: 1px solid var(--ios-border);
-    }
-    .btn-upload {
-      background: #ffffff; color: var(--ios-primary);
-      border: 1px solid var(--ios-primary); padding: 7px 10px; border-radius: 8px;
-      font-size: 11px; font-weight: 600; cursor: pointer; width: 100%;
-    }
+    .photo-preview { width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 6px; display: none; border: 1px solid var(--ios-border); }
+    .btn-upload { background: #ffffff; color: var(--ios-primary); border: 1px solid var(--ios-primary); padding: 7px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; width: 100%; }
 
-    /* Segmented Control OKE / NG */
-    .segmented-control {
-      display: flex; background: #e2e8f0; padding: 3px;
-      border-radius: 10px; margin-top: 8px;
-    }
-    .segment-btn {
-      flex: 1; padding: 10px 0; text-align: center;
-      font-size: 14px; font-weight: 700; border-radius: 8px;
-      cursor: pointer; transition: all 0.2s ease; color: #64748b;
-    }
+    .segmented-control { display: flex; background: #e2e8f0; padding: 3px; border-radius: 10px; margin-top: 8px; }
+    .segment-btn { flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; color: #64748b; }
     .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
-    /* iOS Modal System */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      z-index: 1000; display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 1000;
+      display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     
     .ios-modal {
-      width: 290px; background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-radius: 18px; text-align: center; overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: scale(1.05); transition: transform 0.2s ease;
+      width: 290px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 18px; text-align: center; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: scale(1.05); transition: transform 0.2s ease;
     }
     .modal-overlay.active .ios-modal { transform: scale(1); }
     .modal-content { padding: 22px 18px; }
@@ -191,18 +116,13 @@
     .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: #111827; }
     .modal-sub { font-size: 13px; color: #6b7280; line-height: 1.4; }
     .modal-actions { border-top: 0.5px solid var(--ios-border); display: flex; }
-    .modal-btn {
-      flex: 1; padding: 13px; font-size: 16px; font-weight: 600;
-      color: var(--ios-primary); background: transparent; border: none; cursor: pointer;
-    }
+    .modal-btn { flex: 1; padding: 13px; font-size: 16px; font-weight: 600; color: var(--ios-primary); background: transparent; border: none; cursor: pointer; }
 
     .spinner {
       width: 32px; height: 32px; border: 3px solid rgba(24, 101, 207, 0.15);
-      border-top-color: var(--ios-primary); border-radius: 50%;
-      animation: spin 0.7s linear infinite; margin: 0 auto 12px auto;
+      border-top-color: var(--ios-primary); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .hidden { display: none !important; }
   </style>
 </head>
@@ -214,11 +134,10 @@
 
   <div class="container">
 
-    <!-- PANEL LOGIN OPERATOR (NC REPORT BIP) -->
+    <!-- LOGIN -->
     <div id="panel-login">
       <div class="login-header">
         <div class="geely-logo-card">
-          <!-- Logo Geely Icon -->
           <svg class="geely-logo-icon" viewBox="0 0 100 35" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M5 5 H95 V12 H5 Z" fill="#111827"/>
             <path d="M5 16 H95 V23 H5 Z" fill="#111827"/>
@@ -227,7 +146,7 @@
           <span class="geely-logo-text">NCP RECORD</span>
         </div>
         <h2 class="app-main-title">NC Report BIP</h2>
-        <p class="app-main-subtitle">Non-Conforming Part Reporting 不符合零件报告</p>
+        <p class="app-main-subtitle">Non-Conforming Body Reporting 不符合零件报告</p>
       </div>
 
       <div class="login-card">
@@ -243,13 +162,8 @@
           <label>Department 部门 <span class="req">*</span></label>
           <select id="operator-dept">
             <option value="">— Select department 请选择部门 —</option>
-            <option value="BIP / Quality Control">BIP / Quality Control</option>
-            <option value="Production Assembly">Production Assembly</option>
-            <option value="Body Shop">Body Shop</option>
-            <option value="Paint Shop">Paint Shop</option>
-            <option value="Logistics & Material">Logistics & Material</option>
-            <option value="Engineering & Maintenance">Engineering & Maintenance</option>
-            <option value="Other">Other / Lainnya</option>
+            <option value="IQC BIP">IQC BIP</option>
+            <option value="Other / Lainnya">Other / Lainnya</option>
           </select>
         </div>
 
@@ -257,18 +171,19 @@
       </div>
     </div>
 
-    <!-- MAIN FORM INSPEKSI -->
+    <!-- MAIN FORM -->
     <div id="panel-main" class="hidden">
       
-      <!-- Operator Info Header -->
       <div class="ios-card" style="padding: 12px 16px; background: rgba(24, 101, 207, 0.06); border-color: rgba(24, 101, 207, 0.2);">
-        <div style="font-size: 13px; color: var(--ios-primary); display: flex; justify-content: space-between;">
-          <span>👤 Operator: <b id="display-operator">-</b></span>
-          <span>🏢 Dept: <b id="display-dept">-</b></span>
+        <div style="font-size: 13px; color: var(--ios-primary); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span>👤 <b id="display-operator">-</b></span> | <span>🏢 <b id="display-dept">-</b></span>
+          </div>
+          <button style="border:none; background:transparent; color:var(--ios-danger); font-size:11px; font-weight:700; cursor:pointer;" onclick="logout()">Ganti User</button>
         </div>
       </div>
 
-      <!-- STEP 1: SCAN / INPUT VIN -->
+      <!-- SCAN / INPUT VIN -->
       <div class="ios-card">
         <div class="card-header">1. Barcode / Nomor VIN</div>
         <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan Barcode VIN</button>
@@ -283,7 +198,7 @@
         <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ013523">
       </div>
 
-      <!-- STEP 2: FOTO PANEL (10 FOTO DENGAN KOMPRESI OTOMATIS) -->
+      <!-- FOTO PANEL -->
       <div class="ios-card">
         <div class="card-header">2. Foto Panel Mobil (10 Slot)</div>
         <div class="photo-grid">
@@ -361,7 +276,7 @@
         </div>
       </div>
 
-      <!-- STEP 3: STATUS & KETERANGAN -->
+      <!-- STATUS & KETERANGAN -->
       <div class="ios-card">
         <div class="card-header">3. Hasil Inspeksi</div>
         <label>Status Unit:</label>
@@ -374,14 +289,13 @@
         <textarea id="keterangan" placeholder="Detail temuan cacat/penjelasan..."></textarea>
       </div>
 
-      <!-- SUBMIT BUTTON -->
       <button class="ios-btn btn-success" id="btn-submit" onclick="submitData()">🚀 Simpan Data Inspeksi</button>
 
     </div>
 
   </div>
 
-  <!-- iOS POPUP MODAL SYSTEM -->
+  <!-- POPUP MODAL -->
   <div id="modal-overlay" class="modal-overlay">
     <div class="ios-modal">
       <div class="modal-content">
@@ -397,21 +311,21 @@
   </div>
 
   <script>
-    // ================================================================
-    // URL DEPLOYMENT APPS SCRIPT
-    // ================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_wEhvszwvr5Tz5YaWKTT1qApLCEihioGrz5CRshazs0iTy1Kc1AVBg2igkBUSy5RF/exec";
 
     let codeReader = null;
     let selectedStatus = "OKE";
     let photoData = {};
+    let resetOnModalClose = false;
 
     window.onload = function() {
-      if(localStorage.getItem("operator")) {
-        document.getElementById("operator-name").value = localStorage.getItem("operator");
-      }
-      if(localStorage.getItem("department")) {
-        document.getElementById("operator-dept").value = localStorage.getItem("department");
+      const savedOp = localStorage.getItem("operator");
+      const savedDept = localStorage.getItem("department");
+
+      if (savedOp && savedDept) {
+        document.getElementById("operator-name").value = savedOp;
+        document.getElementById("operator-dept").value = savedDept;
+        login();
       }
     };
 
@@ -438,7 +352,13 @@
       document.getElementById("panel-main").classList.remove("hidden");
     }
 
-    // --- SCANNER BARCODE VIN ---
+    function logout() {
+      localStorage.removeItem("operator");
+      localStorage.removeItem("department");
+      document.getElementById("panel-main").classList.add("hidden");
+      document.getElementById("panel-login").classList.remove("hidden");
+    }
+
     function startScanner() {
       document.getElementById("scanner-container").style.display = "block";
       codeReader = new ZXing.BrowserMultiFormatReader();
@@ -457,7 +377,6 @@
       document.getElementById("scanner-container").style.display = "none";
     }
 
-    // --- FOTO & KOMPRESI CEPAT (CLIENT-SIDE CANVAS) ---
     function triggerPhoto(id) {
       document.getElementById("file-" + id).click();
     }
@@ -469,7 +388,6 @@
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         
-        // Kompresi Gambar Cepat ke Canvas Max 1920px (JPEG Quality 82%)
         compressImage(file, 1920, 1920, 0.82, function(compressedBase64) {
           imgPreview.src = compressedBase64;
           imgPreview.style.display = "block";
@@ -487,7 +405,6 @@
       }
     }
 
-    // Helper Kompresi Gambar
     function compressImage(file, maxWidth, maxHeight, quality, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -523,7 +440,6 @@
       reader.readAsDataURL(file);
     }
 
-    // --- STATUS OKE / NG ---
     function setStatus(status) {
       selectedStatus = status;
       const okeBtn = document.getElementById("btn-oke");
@@ -538,7 +454,6 @@
       }
     }
 
-    // --- SUBMIT DATA FAST ---
     function submitData() {
       const vin = document.getElementById("vin-number").value.trim();
       if (!vin) {
@@ -564,15 +479,31 @@
         body: JSON.stringify(payload)
       })
       .then(() => {
-        showModal('success_reload', 'Berhasil Disimpan', 'Data NC Report BIP berhasil disimpan.');
+        showModal('success_reset', 'Berhasil Disimpan', 'Data NC Report BIP berhasil disimpan. Siap untuk scan berikutnya!');
       })
       .catch(err => {
         showModal('error', 'Gagal Mengirim', 'Terjadi kesalahan: ' + err);
       });
     }
 
-    // --- MODAL HELPER ---
-    let reloadOnModalClose = false;
+    function resetForm() {
+      document.getElementById("vin-number").value = "";
+      document.getElementById("keterangan").value = "";
+      setStatus("OKE");
+      photoData = {};
+
+      const fileKeys = ['ffr', 'ffl', 'ur', 'lr', 'frd', 'fld', 'rrd', 'rld', 'tg', 'addNg'];
+      fileKeys.forEach(id => {
+        const input = document.getElementById("file-" + id);
+        const img = document.getElementById("img-" + id);
+        if (input) input.value = "";
+        if (img) {
+          img.src = "";
+          img.style.display = "none";
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     function showModal(type, title, message) {
       const overlay = document.getElementById("modal-overlay");
@@ -588,15 +519,15 @@
       spinner.classList.add("hidden");
       icon.classList.add("hidden");
       actions.classList.add("hidden");
-      reloadOnModalClose = false;
+      resetOnModalClose = false;
 
       if (type === 'loading') {
         spinner.classList.remove("hidden");
-      } else if (type === 'success' || type === 'success_reload') {
+      } else if (type === 'success' || type === 'success_reset') {
         icon.classList.remove("hidden");
         icon.innerText = "✅";
         actions.classList.remove("hidden");
-        if (type === 'success_reload') reloadOnModalClose = true;
+        if (type === 'success_reset') resetOnModalClose = true;
       } else if (type === 'error') {
         icon.classList.remove("hidden");
         icon.innerText = "⚠️";
@@ -608,8 +539,8 @@
 
     function closeModal() {
       document.getElementById("modal-overlay").classList.remove("active");
-      if (reloadOnModalClose) {
-        location.reload();
+      if (resetOnModalClose) {
+        resetForm();
       }
     }
   </script>
