@@ -92,7 +92,9 @@
     .photo-box span { font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 8px; line-height: 1.2; }
     .photo-box input[type="file"] { display: none; }
     .photo-preview { width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 6px; display: none; border: 1px solid var(--ios-border); }
-    .btn-upload { background: #ffffff; color: var(--ios-primary); border: 1px solid var(--ios-primary); padding: 7px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; width: 100%; }
+    
+    .btn-photo-group { display: flex; gap: 4px; }
+    .btn-upload { background: #ffffff; color: var(--ios-primary); border: 1px solid var(--ios-primary); padding: 6px 4px; border-radius: 8px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; }
 
     .segmented-control { display: flex; background: #e2e8f0; padding: 3px; border-radius: 10px; margin-top: 8px; }
     .segment-btn { flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; color: #64748b; }
@@ -205,71 +207,111 @@
           
           <div class="photo-box">
             <span>1. Front Fender Right</span>
-            <button class="btn-upload" onclick="triggerPhoto('ffr')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-ffr" accept="image/*" onchange="previewPhoto('ffr')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('ffr', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('ffr', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-ffr-cam" accept="image/*" capture="environment" onchange="previewPhoto('ffr', 'cam')">
+            <input type="file" id="file-ffr-gal" accept="image/*" onchange="previewPhoto('ffr', 'gal')">
             <img id="img-ffr" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>2. Front Fender Left</span>
-            <button class="btn-upload" onclick="triggerPhoto('ffl')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-ffl" accept="image/*" onchange="previewPhoto('ffl')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('ffl', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('ffl', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-ffl-cam" accept="image/*" capture="environment" onchange="previewPhoto('ffl', 'cam')">
+            <input type="file" id="file-ffl-gal" accept="image/*" onchange="previewPhoto('ffl', 'gal')">
             <img id="img-ffl" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>3. Upper Roof</span>
-            <button class="btn-upload" onclick="triggerPhoto('ur')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-ur" accept="image/*" onchange="previewPhoto('ur')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('ur', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('ur', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-ur-cam" accept="image/*" capture="environment" onchange="previewPhoto('ur', 'cam')">
+            <input type="file" id="file-ur-gal" accept="image/*" onchange="previewPhoto('ur', 'gal')">
             <img id="img-ur" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>4. Lower Roof</span>
-            <button class="btn-upload" onclick="triggerPhoto('lr')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-lr" accept="image/*" onchange="previewPhoto('lr')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('lr', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('lr', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-lr-cam" accept="image/*" capture="environment" onchange="previewPhoto('lr', 'cam')">
+            <input type="file" id="file-lr-gal" accept="image/*" onchange="previewPhoto('lr', 'gal')">
             <img id="img-lr" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>5. Front Right Door</span>
-            <button class="btn-upload" onclick="triggerPhoto('frd')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-frd" accept="image/*" onchange="previewPhoto('frd')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('frd', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('frd', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-frd-cam" accept="image/*" capture="environment" onchange="previewPhoto('frd', 'cam')">
+            <input type="file" id="file-frd-gal" accept="image/*" onchange="previewPhoto('frd', 'gal')">
             <img id="img-frd" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>6. Front Left Door</span>
-            <button class="btn-upload" onclick="triggerPhoto('fld')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-fld" accept="image/*" onchange="previewPhoto('fld')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('fld', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('fld', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-fld-cam" accept="image/*" capture="environment" onchange="previewPhoto('fld', 'cam')">
+            <input type="file" id="file-fld-gal" accept="image/*" onchange="previewPhoto('fld', 'gal')">
             <img id="img-fld" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>7. Rear Right Door</span>
-            <button class="btn-upload" onclick="triggerPhoto('rrd')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-rrd" accept="image/*" onchange="previewPhoto('rrd')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('rrd', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('rrd', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-rrd-cam" accept="image/*" capture="environment" onchange="previewPhoto('rrd', 'cam')">
+            <input type="file" id="file-rrd-gal" accept="image/*" onchange="previewPhoto('rrd', 'gal')">
             <img id="img-rrd" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>8. Rear Left Door</span>
-            <button class="btn-upload" onclick="triggerPhoto('rld')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-rld" accept="image/*" onchange="previewPhoto('rld')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('rld', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('rld', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-rld-cam" accept="image/*" capture="environment" onchange="previewPhoto('rld', 'cam')">
+            <input type="file" id="file-rld-gal" accept="image/*" onchange="previewPhoto('rld', 'gal')">
             <img id="img-rld" class="photo-preview">
           </div>
 
           <div class="photo-box">
             <span>9. Tailgate</span>
-            <button class="btn-upload" onclick="triggerPhoto('tg')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-tg" accept="image/*" onchange="previewPhoto('tg')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('tg', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('tg', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-tg-cam" accept="image/*" capture="environment" onchange="previewPhoto('tg', 'cam')">
+            <input type="file" id="file-tg-gal" accept="image/*" onchange="previewPhoto('tg', 'gal')">
             <img id="img-tg" class="photo-preview">
           </div>
 
           <div class="photo-box" style="background: rgba(255, 149, 0, 0.06); border-color: rgba(255, 149, 0, 0.4);">
             <span style="color: #c77700;">10. Foto NG Tambahan</span>
-            <button class="btn-upload" style="color: #c77700; border-color: #c77700;" onclick="triggerPhoto('addNg')">📷 / 🖼️ Pilih Foto</button>
-            <input type="file" id="file-addNg" accept="image/*" onchange="previewPhoto('addNg')">
+            <div class="btn-photo-group">
+              <button class="btn-upload" style="color: #c77700; border-color: #c77700;" onclick="triggerPhoto('addNg', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" style="color: #c77700; border-color: #c77700;" onclick="triggerPhoto('addNg', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-addNg-cam" accept="image/*" capture="environment" onchange="previewPhoto('addNg', 'cam')">
+            <input type="file" id="file-addNg-gal" accept="image/*" onchange="previewPhoto('addNg', 'gal')">
             <img id="img-addNg" class="photo-preview">
           </div>
 
@@ -377,12 +419,12 @@
       document.getElementById("scanner-container").style.display = "none";
     }
 
-    function triggerPhoto(id) {
-      document.getElementById("file-" + id).click();
+    function triggerPhoto(id, type) {
+      document.getElementById("file-" + id + "-" + type).click();
     }
 
-    function previewPhoto(id) {
-      const fileInput = document.getElementById("file-" + id);
+    function previewPhoto(id, type) {
+      const fileInput = document.getElementById("file-" + id + "-" + type);
       const imgPreview = document.getElementById("img-" + id);
       
       if (fileInput.files && fileInput.files[0]) {
@@ -494,9 +536,11 @@
 
       const fileKeys = ['ffr', 'ffl', 'ur', 'lr', 'frd', 'fld', 'rrd', 'rld', 'tg', 'addNg'];
       fileKeys.forEach(id => {
-        const input = document.getElementById("file-" + id);
+        const camInput = document.getElementById("file-" + id + "-cam");
+        const galInput = document.getElementById("file-" + id + "-gal");
         const img = document.getElementById("img-" + id);
-        if (input) input.value = "";
+        if (camInput) camInput.value = "";
+        if (galInput) galInput.value = "";
         if (img) {
           img.src = "";
           img.style.display = "none";
