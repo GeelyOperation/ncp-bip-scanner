@@ -2,210 +2,324 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>NCP-BIP Inspection Scanner</title>
-  <!-- Library ZXing untuk Scan Barcode 1D Linear -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>NCP-BIP Inspection</title>
+  <!-- ZXing Scanner -->
   <script src="https://unpkg.com/@zxing/library@latest"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background: #f4f6f9; color: #333; padding-bottom: 30px; }
-    .header { background: #1565C0; color: white; padding: 16px; text-align: center; font-size: 18px; font-weight: bold; }
-    .container { padding: 16px; max-width: 600px; margin: 0 auto; }
-    .card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .card-title { font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #1565C0; border-bottom: 1px solid #eee; padding-bottom: 6px; }
-    label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-top: 10px; margin-bottom: 4px; }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-    textarea { height: 70px; resize: none; }
-    .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    .btn-primary { background: #1565C0; color: white; }
-    .btn-success { background: #2E7D32; color: white; }
-    .btn-secondary { background: #757575; color: white; }
-    
-    /* Counter Batch */
-    .batch-group { display: flex; gap: 8px; align-items: center; }
-    .batch-group select { width: 40%; }
-    .batch-group input { width: 40%; text-align: center; font-weight: bold; }
-    .batch-btn { width: 10%; padding: 10px; font-weight: bold; font-size: 16px; background: #e0e0e0; border: 1px solid #ccc; border-radius: 6px; cursor: pointer; }
+    :root {
+      --ios-bg: #f2f2f7;
+      --ios-card: rgba(255, 255, 255, 0.85);
+      --ios-primary: #007aff;
+      --ios-success: #34c759;
+      --ios-danger: #ff3b30;
+      --ios-text: #1c1c1e;
+      --ios-subtext: #8e8e93;
+      --ios-border: rgba(60, 60, 67, 0.12);
+    }
 
-    /* Video Scanner */
-    #scanner-container { width: 100%; position: relative; display: none; margin-top: 10px; }
-    #video { width: 100%; border-radius: 8px; background: #000; }
-    .scanner-laser { position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: red; box-shadow: 0 0 8px red; }
-
-    /* Photo Grid */
-    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .photo-item { border: 1px dashed #bbb; border-radius: 8px; padding: 8px; text-align: center; background: #fafafa; }
-    .photo-item label { font-size: 11px; margin-top: 0; }
-    .photo-item input[type="file"] { display: none; }
-    .photo-preview { width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-top: 6px; display: none; }
-    .btn-photo { background: #e3f2fd; color: #1565C0; border: 1px solid #1565C0; padding: 6px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-top: 4px; display: block; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     
-    /* Status Badge */
-    .status-group { display: flex; gap: 10px; margin-top: 8px; }
-    .status-option { flex: 1; text-align: center; padding: 10px; border: 2px solid #ccc; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .status-option.selected-oke { border-color: #2E7D32; background: #E8F5E9; color: #2E7D32; }
-    .status-option.selected-ng { border-color: #C62828; background: #FFEBEE; color: #C62828; }
+    body { background-color: var(--ios-bg); color: var(--ios-text); padding-bottom: 40px; }
+
+    /* Header Nav iOS Style */
+    .ios-navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(249, 249, 249, 0.82);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 0.5px solid var(--ios-border);
+      padding: 16px; text-align: center;
+    }
+    .ios-navbar h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
+
+    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
+
+    /* iOS Glass Cards */
+    .ios-card {
+      background: var(--ios-card);
+      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      border-radius: 16px;
+      padding: 16px; margin-bottom: 16px;
+      border: 0.5px solid var(--ios-border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header {
+      font-size: 13px; font-weight: 600; text-transform: uppercase;
+      color: var(--ios-subtext); margin-bottom: 12px; letter-spacing: -0.1px;
+    }
+
+    /* Controls & Inputs */
+    label { font-size: 13px; font-weight: 500; color: var(--ios-subtext); display: block; margin-top: 10px; margin-bottom: 6px; }
+    input, textarea {
+      width: 100%; padding: 12px 14px;
+      background: #ffffff; border: 1px solid var(--ios-border);
+      border-radius: 10px; font-size: 15px; color: var(--ios-text);
+      outline: none; transition: all 0.2s ease;
+    }
+    input:focus, textarea:focus { border-color: var(--ios-primary); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15); }
+    textarea { height: 75px; resize: none; }
+
+    /* iOS Buttons */
+    .ios-btn {
+      width: 100%; padding: 14px; border-radius: 12px; border: none;
+      font-size: 16px; font-weight: 600; cursor: pointer; text-align: center;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .ios-btn:active { opacity: 0.7; transform: scale(0.98); }
+    .btn-primary { background: var(--ios-primary); color: white; }
+    .btn-success { background: var(--ios-success); color: white; }
+    .btn-secondary { background: #e5e5ea; color: var(--ios-text); }
+
+    /* Scanner View */
+    #scanner-container {
+      position: relative; display: none; margin-top: 12px;
+      border-radius: 14px; overflow: hidden; background: #000;
+    }
+    #video { width: 100%; height: 220px; object-fit: cover; }
+    .scanner-target {
+      position: absolute; top: 50%; left: 10%; right: 10%; height: 2px;
+      background: var(--ios-danger); box-shadow: 0 0 10px var(--ios-danger);
+    }
+
+    /* Photo Grid iOS */
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+    .photo-box {
+      background: #ffffff; border: 1px solid var(--ios-border);
+      border-radius: 12px; padding: 10px; text-align: center; position: relative;
+    }
+    .photo-box span { font-size: 12px; font-weight: 600; color: #3a3a3c; display: block; margin-bottom: 8px; line-height: 1.2; }
+    .photo-box input[type="file"] { display: none; }
+    .photo-preview {
+      width: 100%; height: 95px; object-fit: cover;
+      border-radius: 8px; margin-top: 6px; display: none; border: 0.5px solid var(--ios-border);
+    }
+    .btn-upload {
+      background: #f2f2f7; color: var(--ios-primary);
+      border: none; padding: 8px 10px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; cursor: pointer; width: 100%;
+    }
+
+    /* iOS Segmented Control (OKE / NG) */
+    .segmented-control {
+      display: flex; background: #e3e3e8; padding: 3px;
+      border-radius: 9px; margin-top: 8px;
+    }
+    .segment-btn {
+      flex: 1; padding: 9px 0; text-align: center;
+      font-size: 14px; font-weight: 600; border-radius: 7px;
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      color: #636366;
+    }
+    .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+
+    /* iOS POPUP MODAL SYSTEM */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    
+    .ios-modal {
+      width: 280px; background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 18px; text-align: center; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: scale(1.1); transition: transform 0.25s ease;
+    }
+    .modal-overlay.active .ios-modal { transform: scale(1); }
+    .modal-content { padding: 20px 16px; }
+    .modal-icon { font-size: 40px; margin-bottom: 10px; }
+    .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: var(--ios-subtext); line-height: 1.4; }
+    .modal-actions { border-top: 0.5px solid var(--ios-border); display: flex; }
+    .modal-btn {
+      flex: 1; padding: 13px; font-size: 16px; font-weight: 600;
+      color: var(--ios-primary); background: transparent; border: none; cursor: pointer;
+    }
+    .modal-btn:active { background: rgba(0,0,0,0.05); }
+
+    /* Spinner iOS */
+    .spinner {
+      width: 32px; height: 32px; border: 3px solid rgba(0, 122, 255, 0.2);
+      border-top-color: var(--ios-primary); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 12px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="header">INSPEKSI NCP-BIP UNIT</div>
+  <div class="ios-navbar">
+    <h1>Inspeksi NCP-BIP Unit</h1>
+  </div>
 
   <div class="container">
 
-    <!-- LOGIN PANEL -->
-    <div id="panel-login" class="card">
-      <div class="card-title">Login Operator</div>
+    <!-- PANEL LOGIN OPERATOR -->
+    <div id="panel-login" class="ios-card">
+      <div class="card-header">Autentikasi</div>
       <label>Nama / NPK Operator:</label>
-      <input type="text" id="operator-name" placeholder="Masukkan Nama Operator">
-      <button class="btn btn-primary" onclick="login()">Masuk Aplikasi</button>
+      <input type="text" id="operator-name" placeholder="Masukkan nama Anda">
+      <button class="ios-btn btn-primary" style="margin-top: 14px;" onclick="login()">Masuk Aplikasi</button>
     </div>
 
     <!-- MAIN FORM -->
     <div id="panel-main" class="hidden">
       
-      <!-- Operator Info -->
-      <div class="card" style="padding:10px; background:#e3f2fd;">
-        <span style="font-size:13px;">Operator: <b id="display-operator">-</b></span>
+      <!-- Operator Info Header -->
+      <div class="ios-card" style="padding: 12px 16px; background: rgba(0, 122, 255, 0.08);">
+        <span style="font-size: 13px; font-weight: 500; color: var(--ios-primary);">
+          👤 Operator: <b id="display-operator" style="font-weight: 700;">-</b>
+        </span>
       </div>
 
-      <!-- STEP 1: SCAN VIN BARCODE 1D -->
-      <div class="card">
-        <div class="card-title">1. Scan Barcode VIN Mobil (1D Linear)</div>
-        <button class="btn btn-primary" onclick="startScanner()">📷 Buka Kamera Scan Barcode</button>
+      <!-- STEP 1: SCAN BARCODE NCP/VIN -->
+      <div class="ios-card">
+        <div class="card-header">1. Scan Barcode NCP / VIN</div>
+        <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan Barcode VIN (1D)</button>
         
         <div id="scanner-container">
           <video id="video"></video>
-          <div class="scanner-laser"></div>
-          <button class="btn btn-secondary" onclick="stopScanner()">Tutup Kamera</button>
+          <div class="scanner-target"></div>
+          <button class="ios-btn btn-secondary" style="margin-top: 8px; border-radius: 0;" onclick="stopScanner()">Tutup Kamera</button>
         </div>
 
-        <label>Hasil Scan Nomor VIN / NCP:</label>
-        <input type="text" id="vin-number" placeholder="Nomor VIN akan terisi otomatis" readonly>
+        <label>Nomor NCP / VIN:</label>
+        <input type="text" id="vin-number" placeholder="Hasil scan barcode..." readonly>
       </div>
 
-      <!-- STEP 2: BATCH NUMBER -->
-      <div class="card">
-        <div class="card-title">2. Input Batch Number</div>
-        <label>Format Batch (Cth: GSIDE26095 / GSIDK26055):</label>
-        <div class="batch-group">
-          <select id="batch-prefix">
-            <option value="GSIDE">GSIDE</option>
-            <option value="GSIDK">GSIDK</option>
-          </select>
-          <input type="number" id="batch-number" value="26095" onchange="saveBatchState()">
-          <button class="batch-btn" onclick="adjustBatch(-1)">-</button>
-          <button class="batch-btn" onclick="adjustBatch(1)">+</button>
-        </div>
-      </div>
-
-      <!-- STEP 3: 10 FOTO PANEL MOBIL -->
-      <div class="card">
-        <div class="card-title">3. Upload Foto Panel Mobil (10 Slot)</div>
+      <!-- STEP 2: FOTO PANEL (GALERI / KAMERA) -->
+      <div class="ios-card">
+        <div class="card-header">2. Foto Panel Mobil (10 Slot)</div>
         <div class="photo-grid">
           
-          <div class="photo-item">
-            <label>1. Front Fender Right</label>
-            <button class="btn-photo" onclick="triggerCamera('ffr')">Ambil Foto</button>
-            <input type="file" id="file-ffr" accept="image/*" capture="environment" onchange="previewPhoto('ffr')">
+          <!-- Item 1 -->
+          <div class="photo-box">
+            <span>1. Front Fender Right</span>
+            <button class="btn-upload" onclick="triggerPhoto('ffr')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-ffr" accept="image/*" onchange="previewPhoto('ffr')">
             <img id="img-ffr" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>2. Front Fender Left</label>
-            <button class="btn-photo" onclick="triggerCamera('ffl')">Ambil Foto</button>
-            <input type="file" id="file-ffl" accept="image/*" capture="environment" onchange="previewPhoto('ffl')">
+          <!-- Item 2 -->
+          <div class="photo-box">
+            <span>2. Front Fender Left</span>
+            <button class="btn-upload" onclick="triggerPhoto('ffl')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-ffl" accept="image/*" onchange="previewPhoto('ffl')">
             <img id="img-ffl" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>3. Upper Roof</label>
-            <button class="btn-photo" onclick="triggerCamera('ur')">Ambil Foto</button>
-            <input type="file" id="file-ur" accept="image/*" capture="environment" onchange="previewPhoto('ur')">
+          <!-- Item 3 -->
+          <div class="photo-box">
+            <span>3. Upper Roof</span>
+            <button class="btn-upload" onclick="triggerPhoto('ur')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-ur" accept="image/*" onchange="previewPhoto('ur')">
             <img id="img-ur" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>4. Lower Roof</label>
-            <button class="btn-photo" onclick="triggerCamera('lr')">Ambil Foto</button>
-            <input type="file" id="file-lr" accept="image/*" capture="environment" onchange="previewPhoto('lr')">
+          <!-- Item 4 -->
+          <div class="photo-box">
+            <span>4. Lower Roof</span>
+            <button class="btn-upload" onclick="triggerPhoto('lr')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-lr" accept="image/*" onchange="previewPhoto('lr')">
             <img id="img-lr" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>5. Front Right Door</label>
-            <button class="btn-photo" onclick="triggerCamera('frd')">Ambil Foto</button>
-            <input type="file" id="file-frd" accept="image/*" capture="environment" onchange="previewPhoto('frd')">
+          <!-- Item 5 -->
+          <div class="photo-box">
+            <span>5. Front Right Door</span>
+            <button class="btn-upload" onclick="triggerPhoto('frd')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-frd" accept="image/*" onchange="previewPhoto('frd')">
             <img id="img-frd" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>6. Front Left Door</label>
-            <button class="btn-photo" onclick="triggerCamera('fld')">Ambil Foto</button>
-            <input type="file" id="file-fld" accept="image/*" capture="environment" onchange="previewPhoto('fld')">
+          <!-- Item 6 -->
+          <div class="photo-box">
+            <span>6. Front Left Door</span>
+            <button class="btn-upload" onclick="triggerPhoto('fld')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-fld" accept="image/*" onchange="previewPhoto('fld')">
             <img id="img-fld" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>7. Rear Right Door</label>
-            <button class="btn-photo" onclick="triggerCamera('rrd')">Ambil Foto</button>
-            <input type="file" id="file-rrd" accept="image/*" capture="environment" onchange="previewPhoto('rrd')">
+          <!-- Item 7 -->
+          <div class="photo-box">
+            <span>7. Rear Right Door</span>
+            <button class="btn-upload" onclick="triggerPhoto('rrd')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-rrd" accept="image/*" onchange="previewPhoto('rrd')">
             <img id="img-rrd" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>8. Rear Left Door</label>
-            <button class="btn-photo" onclick="triggerCamera('rld')">Ambil Foto</button>
-            <input type="file" id="file-rld" accept="image/*" capture="environment" onchange="previewPhoto('rld')">
+          <!-- Item 8 -->
+          <div class="photo-box">
+            <span>8. Rear Left Door</span>
+            <button class="btn-upload" onclick="triggerPhoto('rld')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-rld" accept="image/*" onchange="previewPhoto('rld')">
             <img id="img-rld" class="photo-preview">
           </div>
 
-          <div class="photo-item">
-            <label>9. Tailgate</label>
-            <button class="btn-photo" onclick="triggerCamera('tg')">Ambil Foto</button>
-            <input type="file" id="file-tg" accept="image/*" capture="environment" onchange="previewPhoto('tg')">
+          <!-- Item 9 -->
+          <div class="photo-box">
+            <span>9. Tailgate</span>
+            <button class="btn-upload" onclick="triggerPhoto('tg')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-tg" accept="image/*" onchange="previewPhoto('tg')">
             <img id="img-tg" class="photo-preview">
           </div>
 
-          <div class="photo-item" style="border-color:#ffa726; background:#fff8e1;">
-            <label>10. Foto NG Tambahan (Opsional)</label>
-            <button class="btn-photo" onclick="triggerCamera('addNg')">Ambil Foto</button>
-            <input type="file" id="file-addNg" accept="image/*" capture="environment" onchange="previewPhoto('addNg')">
+          <!-- Item 10 -->
+          <div class="photo-box" style="background: rgba(255, 149, 0, 0.05); border-color: rgba(255, 149, 0, 0.3);">
+            <span style="color: #c77700;">10. Foto NG Tambahan</span>
+            <button class="btn-upload" style="color: #c77700;" onclick="triggerPhoto('addNg')">📷 / 🖼️ Pilih Foto</button>
+            <input type="file" id="file-addNg" accept="image/*" onchange="previewPhoto('addNg')">
             <img id="img-addNg" class="photo-preview">
           </div>
 
         </div>
       </div>
 
-      <!-- STEP 4: STATUS & KETERANGAN -->
-      <div class="card">
-        <div class="card-title">4. Status Inspeksi & Keterangan</div>
-        <label>Status Inspeksi:</label>
-        <div class="status-group">
-          <div id="status-oke" class="status-option selected-oke" onclick="setStatus('OKE')">OKE</div>
-          <div id="status-ng" class="status-option" onclick="setStatus('NG')">NG</div>
+      <!-- STEP 3: STATUS & KETERANGAN -->
+      <div class="ios-card">
+        <div class="card-header">3. Hasil Inspeksi</div>
+        <label>Status Unit:</label>
+        <div class="segmented-control">
+          <div id="btn-oke" class="segment-btn active-oke" onclick="setStatus('OKE')">OKE</div>
+          <div id="btn-ng" class="segment-btn" onclick="setStatus('NG')">NG</div>
         </div>
 
-        <label>Keterangan / Detail Temuan:</label>
-        <textarea id="keterangan" placeholder="Masukkan keterangan jika ditemukan temuan NG..."></textarea>
+        <label>Keterangan / Catatan:</label>
+        <textarea id="keterangan" placeholder="Masukkan detail jika ada temuan..."></textarea>
       </div>
 
       <!-- SUBMIT BUTTON -->
-      <button class="btn btn-success" id="btn-submit" onclick="submitData()">🚀 KIRIM DATA INSPEKSI</button>
-      <div id="loading-text" style="display:none; text-align:center; margin-top:10px; font-weight:bold; color:#1565C0;">
-        ⏳ Sedang mengunggah foto ke Google Drive & menyimpan data...
-      </div>
+      <button class="ios-btn btn-success" id="btn-submit" onclick="submitData()">🚀 Simpan Data Inspeksi</button>
 
     </div>
 
   </div>
 
+  <!-- iOS POPUP MODAL SYSTEM -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="ios-modal">
+      <div class="modal-content">
+        <div id="modal-spinner" class="spinner hidden"></div>
+        <div id="modal-icon" class="modal-icon hidden"></div>
+        <div id="modal-title" class="modal-title">Judul</div>
+        <div id="modal-sub" class="modal-sub">Deskripsi pesan akan muncul di sini...</div>
+      </div>
+      <div id="modal-actions" class="modal-actions hidden">
+        <button id="modal-btn-action" class="modal-btn" onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ================================================================
-    // KONFIGURASI URL APPS SCRIPT WEB APP
-    // Ganti URL ini dengan URL Web App Apps Script milik Anda!
+    // URL DEPLOYMENT APPS SCRIPT SPREADSHEET TERTULIS AUTOMATIS
     // ================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_wEhvszwvr5Tz5YaWKTT1qApLCEihioGrz5CRshazs0iTy1Kc1AVBg2igkBUSy5RF/exec";
 
@@ -213,29 +327,25 @@
     let selectedStatus = "OKE";
     let photoData = {};
 
-    // Load state awal
     window.onload = function() {
       if(localStorage.getItem("operator")) {
         document.getElementById("operator-name").value = localStorage.getItem("operator");
-      }
-      if(localStorage.getItem("batchPrefix")) {
-        document.getElementById("batch-prefix").value = localStorage.getItem("batchPrefix");
-      }
-      if(localStorage.getItem("batchNumber")) {
-        document.getElementById("batch-number").value = localStorage.getItem("batchNumber");
       }
     };
 
     function login() {
       const name = document.getElementById("operator-name").value.trim();
-      if(!name) { alert("Silakan masukkan nama operator!"); return; }
+      if(!name) { 
+        showModal('error', 'Nama Operator', 'Silakan masukkan nama atau NPK Anda.');
+        return; 
+      }
       localStorage.setItem("operator", name);
       document.getElementById("display-operator").innerText = name;
       document.getElementById("panel-login").classList.add("hidden");
       document.getElementById("panel-main").classList.remove("hidden");
     }
 
-    // --- SCANNER BARCODE 1D (ZXing) ---
+    // --- SCANNER BARCODE ---
     function startScanner() {
       document.getElementById("scanner-container").style.display = "block";
       codeReader = new ZXing.BrowserMultiFormatReader();
@@ -244,33 +354,18 @@
         if (result) {
           document.getElementById("vin-number").value = result.text;
           stopScanner();
-          alert("Barcode VIN Berhasil Discan: " + result.text);
+          showModal('success', 'Barcode Terbaca', 'No NCP/VIN: ' + result.text);
         }
       }).catch(err => console.error(err));
     }
 
     function stopScanner() {
-      if (codeReader) {
-        codeReader.reset();
-      }
+      if (codeReader) { codeReader.reset(); }
       document.getElementById("scanner-container").style.display = "none";
     }
 
-    // --- BATCH NUMBER COUNTER ---
-    function adjustBatch(delta) {
-      let numInput = document.getElementById("batch-number");
-      let val = parseInt(numInput.value) || 0;
-      numInput.value = val + delta;
-      saveBatchState();
-    }
-
-    function saveBatchState() {
-      localStorage.setItem("batchPrefix", document.getElementById("batch-prefix").value);
-      localStorage.setItem("batchNumber", document.getElementById("batch-number").value);
-    }
-
-    // --- PHOTO HANDLING ---
-    function triggerCamera(id) {
+    // --- UPLOAD FOTO (GALERI / KAMERA) ---
+    function triggerPhoto(id) {
       document.getElementById("file-" + id).click();
     }
 
@@ -284,18 +379,12 @@
           imgPreview.src = e.target.result;
           imgPreview.style.display = "block";
           
-          // Simpan string Base64 foto
           const keyMapping = {
-            'ffr': 'frontFenderRight',
-            'ffl': 'frontFenderLeft',
-            'ur': 'upperRoof',
-            'lr': 'lowerRoof',
-            'frd': 'frontRightDoor',
-            'fld': 'frontLeftDoor',
-            'rrd': 'rearRightDoor',
-            'rld': 'rearLeftDoor',
-            'tg': 'tailgate',
-            'addNg': 'additionalNg'
+            'ffr': 'frontFenderRight', 'ffl': 'frontFenderLeft',
+            'ur': 'upperRoof', 'lr': 'lowerRoof',
+            'frd': 'frontRightDoor', 'fld': 'frontLeftDoor',
+            'rrd': 'rearRightDoor', 'rld': 'rearLeftDoor',
+            'tg': 'tailgate', 'addNg': 'additionalNg'
           };
           
           photoData[keyMapping[id]] = { base64: e.target.result };
@@ -307,60 +396,91 @@
     // --- STATUS OKE / NG ---
     function setStatus(status) {
       selectedStatus = status;
-      const okeBtn = document.getElementById("status-oke");
-      const ngBtn = document.getElementById("status-ng");
+      const okeBtn = document.getElementById("btn-oke");
+      const ngBtn = document.getElementById("btn-ng");
       
       if (status === "OKE") {
-        okeBtn.className = "status-option selected-oke";
-        ngBtn.className = "status-option";
+        okeBtn.className = "segment-btn active-oke";
+        ngBtn.className = "segment-btn";
       } else {
-        okeBtn.className = "status-option";
-        ngBtn.className = "status-option selected-ng";
+        okeBtn.className = "segment-btn";
+        ngBtn.className = "segment-btn active-ng";
       }
     }
 
-    // --- SUBMIT DATA ---
+    // --- SUBMIT DATA WITH POP-UP MODAL ---
     function submitData() {
       const vin = document.getElementById("vin-number").value.trim();
       if (!vin) {
-        alert("Silakan scan Barcode VIN terlebih dahulu!");
+        showModal('error', 'Data Belum Lengkap', 'Silakan scan Barcode NCP/VIN terlebih dahulu!');
         return;
       }
-
-      const prefix = document.getElementById("batch-prefix").value;
-      const numVal = document.getElementById("batch-number").value;
-      const fullBatch = prefix + numVal;
 
       const payload = {
         operator: localStorage.getItem("operator"),
         vin: vin,
-        batch: fullBatch,
         photos: photoData,
         status: selectedStatus,
         keterangan: document.getElementById("keterangan").value
       };
 
-      document.getElementById("btn-submit").disabled = true;
-      document.getElementById("loading-text").style.display = "block";
+      // Tampilkan Modal Loading
+      showModal('loading', 'Mengirim Data', 'Sedang mengunggah foto ke Google Drive & menyimpan data ke Spreadsheet...');
 
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // untuk menghindari kendala CORS pada Apps Script
+        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
       .then(() => {
-        alert("Data NCP-BIP & Foto Berhasil Dikirim!");
-        // Increment nomor batch untuk unit berikutnya
-        adjustBatch(1);
-        // Reset form
-        location.reload();
+        showModal('success_reload', 'Berhasil Disimpan', 'Data NCP-BIP & Foto telah sukses terunggah.');
       })
       .catch(err => {
-        alert("Gagal mengirimi data: " + err);
-        document.getElementById("btn-submit").disabled = false;
-        document.getElementById("loading-text").style.display = "none";
+        showModal('error', 'Gagal Mengirim', 'Terjadi kesalahan: ' + err);
       });
+    }
+
+    // --- iOS MODAL HELPER ---
+    let reloadOnModalClose = false;
+
+    function showModal(type, title, message) {
+      const overlay = document.getElementById("modal-overlay");
+      const spinner = document.getElementById("modal-spinner");
+      const icon = document.getElementById("modal-icon");
+      const titleElem = document.getElementById("modal-title");
+      const subElem = document.getElementById("modal-sub");
+      const actions = document.getElementById("modal-actions");
+
+      titleElem.innerText = title;
+      subElem.innerText = message;
+
+      spinner.classList.add("hidden");
+      icon.classList.add("hidden");
+      actions.classList.add("hidden");
+      reloadOnModalClose = false;
+
+      if (type === 'loading') {
+        spinner.classList.remove("hidden");
+      } else if (type === 'success' || type === 'success_reload') {
+        icon.classList.remove("hidden");
+        icon.innerText = "✅";
+        actions.classList.remove("hidden");
+        if (type === 'success_reload') reloadOnModalClose = true;
+      } else if (type === 'error') {
+        icon.classList.remove("hidden");
+        icon.innerText = "⚠️";
+        actions.classList.remove("hidden");
+      }
+
+      overlay.classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modal-overlay").classList.remove("active");
+      if (reloadOnModalClose) {
+        location.reload();
+      }
     }
   </script>
 </body>
