@@ -3,76 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>NCP-BIP Inspection</title>
-  <!-- ZXing Scanner -->
+  <title>NC REPORT BIP</title>
+  <!-- ZXing Barcode Scanner Library -->
   <script src="https://unpkg.com/@zxing/library@latest"></script>
   <style>
     :root {
-      --ios-bg: #f2f2f7;
-      --ios-card: rgba(255, 255, 255, 0.85);
-      --ios-primary: #007aff;
+      --ios-bg: #f4f5f9;
+      --ios-card: #ffffff;
+      --ios-primary: #1865cf;
+      --ios-primary-hover: #1251a8;
       --ios-success: #34c759;
       --ios-danger: #ff3b30;
       --ios-text: #1c1c1e;
       --ios-subtext: #8e8e93;
-      --ios-border: rgba(60, 60, 67, 0.12);
+      --ios-border: #e2e8f0;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
     
     body { background-color: var(--ios-bg); color: var(--ios-text); padding-bottom: 40px; }
 
     /* Header Nav iOS Style */
     .ios-navbar {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(249, 249, 249, 0.82);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 0.5px solid var(--ios-border);
       padding: 16px; text-align: center;
     }
-    .ios-navbar h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; }
+    .ios-navbar h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; color: var(--ios-text); }
 
-    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
+    .container { padding: 16px; max-width: 480px; margin: 0 auto; }
 
-    /* iOS Glass Cards */
-    .ios-card {
+    /* LOGIN SCREEN DESIGN (NC REPORT BIP) */
+    .login-header {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 24px;
+    }
+
+    .geely-logo-card {
+      width: 100px; height: 100px;
+      background: #ffffff;
+      border-radius: 20px;
+      margin: 0 auto 16px auto;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .geely-logo-icon {
+      width: 50px; height: auto; margin-bottom: 4px;
+    }
+    .geely-logo-text {
+      font-size: 9px; font-weight: 800; color: #d32f2f; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+
+    .app-main-title {
+      font-size: 24px; font-weight: 800; color: #111827; margin-bottom: 4px; letter-spacing: -0.5px;
+    }
+    .app-main-subtitle {
+      font-size: 13px; color: #6b7280; font-weight: 400;
+    }
+
+    .login-card {
       background: var(--ios-card);
-      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      border-radius: 16px;
-      padding: 16px; margin-bottom: 16px;
-      border: 0.5px solid var(--ios-border);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      border-radius: 20px;
+      padding: 24px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--ios-border);
     }
 
-    .card-header {
-      font-size: 13px; font-weight: 600; text-transform: uppercase;
-      color: var(--ios-subtext); margin-bottom: 12px; letter-spacing: -0.1px;
+    .login-card-title {
+      font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 4px;
+    }
+    .login-card-sub {
+      font-size: 12px; color: #8e8e93; line-height: 1.4; margin-bottom: 20px;
     }
 
-    /* Controls & Inputs */
-    label { font-size: 13px; font-weight: 500; color: var(--ios-subtext); display: block; margin-top: 10px; margin-bottom: 6px; }
-    input, textarea {
+    /* Form Fields */
+    .form-group { margin-bottom: 16px; }
+    label { font-size: 13px; font-weight: 600; color: #374151; display: block; margin-bottom: 6px; }
+    label .req { color: var(--ios-danger); }
+    
+    input[type="text"], select, textarea {
       width: 100%; padding: 12px 14px;
-      background: #ffffff; border: 1px solid var(--ios-border);
-      border-radius: 10px; font-size: 15px; color: var(--ios-text);
+      background: #ffffff; border: 1px solid #d1d5db;
+      border-radius: 12px; font-size: 14px; color: var(--ios-text);
       outline: none; transition: all 0.2s ease;
+      appearance: none; -webkit-appearance: none;
     }
-    input:focus, textarea:focus { border-color: var(--ios-primary); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15); }
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%206b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 36px;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--ios-primary); box-shadow: 0 0 0 3px rgba(24, 101, 207, 0.15); }
     textarea { height: 75px; resize: none; }
 
-    /* iOS Buttons */
+    /* iOS Cards General */
+    .ios-card {
+      background: var(--ios-card);
+      border-radius: 18px;
+      padding: 18px; margin-bottom: 16px;
+      border: 1px solid var(--ios-border);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
+    }
+    .card-header {
+      font-size: 13px; font-weight: 700; text-transform: uppercase;
+      color: var(--ios-subtext); margin-bottom: 14px; letter-spacing: 0.2px;
+    }
+
+    /* Buttons */
     .ios-btn {
       width: 100%; padding: 14px; border-radius: 12px; border: none;
-      font-size: 16px; font-weight: 600; cursor: pointer; text-align: center;
-      transition: opacity 0.2s ease, transform 0.1s ease;
+      font-size: 15px; font-weight: 600; cursor: pointer; text-align: center;
+      transition: all 0.2s ease;
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .ios-btn:active { opacity: 0.7; transform: scale(0.98); }
+    .ios-btn:active { opacity: 0.8; transform: scale(0.98); }
     .btn-primary { background: var(--ios-primary); color: white; }
     .btn-success { background: var(--ios-success); color: white; }
     .btn-secondary { background: #e5e5ea; color: var(--ios-text); }
 
-    /* Scanner View */
+    /* Scanner UI */
     #scanner-container {
       position: relative; display: none; margin-top: 12px;
       border-radius: 14px; overflow: hidden; background: #000;
@@ -83,106 +139,139 @@
       background: var(--ios-danger); box-shadow: 0 0 10px var(--ios-danger);
     }
 
-    /* Photo Grid iOS */
+    /* Grid Foto */
     .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
     .photo-box {
-      background: #ffffff; border: 1px solid var(--ios-border);
+      background: #f8fafc; border: 1px dashed #cbd5e1;
       border-radius: 12px; padding: 10px; text-align: center; position: relative;
     }
-    .photo-box span { font-size: 12px; font-weight: 600; color: #3a3a3c; display: block; margin-bottom: 8px; line-height: 1.2; }
+    .photo-box span { font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 8px; line-height: 1.2; }
     .photo-box input[type="file"] { display: none; }
     .photo-preview {
       width: 100%; height: 95px; object-fit: cover;
-      border-radius: 8px; margin-top: 6px; display: none; border: 0.5px solid var(--ios-border);
+      border-radius: 8px; margin-top: 6px; display: none; border: 1px solid var(--ios-border);
     }
     .btn-upload {
-      background: #f2f2f7; color: var(--ios-primary);
-      border: none; padding: 8px 10px; border-radius: 8px;
-      font-size: 12px; font-weight: 600; cursor: pointer; width: 100%;
+      background: #ffffff; color: var(--ios-primary);
+      border: 1px solid var(--ios-primary); padding: 7px 10px; border-radius: 8px;
+      font-size: 11px; font-weight: 600; cursor: pointer; width: 100%;
     }
 
-    /* iOS Segmented Control (OKE / NG) */
+    /* Segmented Control OKE / NG */
     .segmented-control {
-      display: flex; background: #e3e3e8; padding: 3px;
-      border-radius: 9px; margin-top: 8px;
+      display: flex; background: #e2e8f0; padding: 3px;
+      border-radius: 10px; margin-top: 8px;
     }
     .segment-btn {
-      flex: 1; padding: 9px 0; text-align: center;
-      font-size: 14px; font-weight: 600; border-radius: 7px;
-      cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-      color: #636366;
+      flex: 1; padding: 10px 0; text-align: center;
+      font-size: 14px; font-weight: 700; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s ease; color: #64748b;
     }
-    .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
-    .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
-    /* iOS POPUP MODAL SYSTEM */
+    /* iOS Modal System */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       z-index: 1000; display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     
     .ios-modal {
-      width: 280px; background: rgba(255, 255, 255, 0.92);
+      width: 290px; background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-radius: 18px; text-align: center; overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: scale(1.1); transition: transform 0.25s ease;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: scale(1.05); transition: transform 0.2s ease;
     }
     .modal-overlay.active .ios-modal { transform: scale(1); }
-    .modal-content { padding: 20px 16px; }
-    .modal-icon { font-size: 40px; margin-bottom: 10px; }
-    .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
-    .modal-sub { font-size: 13px; color: var(--ios-subtext); line-height: 1.4; }
+    .modal-content { padding: 22px 18px; }
+    .modal-icon { font-size: 38px; margin-bottom: 8px; }
+    .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: #111827; }
+    .modal-sub { font-size: 13px; color: #6b7280; line-height: 1.4; }
     .modal-actions { border-top: 0.5px solid var(--ios-border); display: flex; }
     .modal-btn {
       flex: 1; padding: 13px; font-size: 16px; font-weight: 600;
       color: var(--ios-primary); background: transparent; border: none; cursor: pointer;
     }
-    .modal-btn:active { background: rgba(0,0,0,0.05); }
 
-    /* Spinner iOS */
     .spinner {
-      width: 32px; height: 32px; border: 3px solid rgba(0, 122, 255, 0.2);
+      width: 32px; height: 32px; border: 3px solid rgba(24, 101, 207, 0.15);
       border-top-color: var(--ios-primary); border-radius: 50%;
-      animation: spin 0.8s linear infinite; margin: 0 auto 12px auto;
+      animation: spin 0.7s linear infinite; margin: 0 auto 12px auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .hidden { display: none; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <div class="ios-navbar">
-    <h1>Inspeksi NCP-BIP Unit</h1>
+    <h1>NC REPORT BIP</h1>
   </div>
 
   <div class="container">
 
-    <!-- PANEL LOGIN OPERATOR -->
-    <div id="panel-login" class="ios-card">
-      <div class="card-header">Autentikasi</div>
-      <label>Nama / NPK Operator:</label>
-      <input type="text" id="operator-name" placeholder="Masukkan nama Anda">
-      <button class="ios-btn btn-primary" style="margin-top: 14px;" onclick="login()">Masuk Aplikasi</button>
+    <!-- PANEL LOGIN OPERATOR (NC REPORT BIP) -->
+    <div id="panel-login">
+      <div class="login-header">
+        <div class="geely-logo-card">
+          <!-- Logo Geely Icon -->
+          <svg class="geely-logo-icon" viewBox="0 0 100 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 5 H95 V12 H5 Z" fill="#111827"/>
+            <path d="M5 16 H95 V23 H5 Z" fill="#111827"/>
+            <path d="M5 27 H95 V30 H5 Z" fill="#d32f2f"/>
+          </svg>
+          <span class="geely-logo-text">NCP RECORD</span>
+        </div>
+        <h2 class="app-main-title">NC Report BIP</h2>
+        <p class="app-main-subtitle">Non-Conforming Part Reporting 不符合零件报告</p>
+      </div>
+
+      <div class="login-card">
+        <div class="login-card-title">Sign in 登录</div>
+        <p class="login-card-sub">Your info will be remembered on this device. 您的信息将在此设备上保存。</p>
+        
+        <div class="form-group">
+          <label>Full Name 姓名 <span class="req">*</span></label>
+          <input type="text" id="operator-name" placeholder="Enter your full name 请输入姓名">
+        </div>
+
+        <div class="form-group">
+          <label>Department 部门 <span class="req">*</span></label>
+          <select id="operator-dept">
+            <option value="">— Select department 请选择部门 —</option>
+            <option value="BIP / Quality Control">BIP / Quality Control</option>
+            <option value="Production Assembly">Production Assembly</option>
+            <option value="Body Shop">Body Shop</option>
+            <option value="Paint Shop">Paint Shop</option>
+            <option value="Logistics & Material">Logistics & Material</option>
+            <option value="Engineering & Maintenance">Engineering & Maintenance</option>
+            <option value="Other">Other / Lainnya</option>
+          </select>
+        </div>
+
+        <button class="ios-btn btn-primary" style="margin-top: 20px;" onclick="login()">Continue 继续 →</button>
+      </div>
     </div>
 
-    <!-- MAIN FORM -->
+    <!-- MAIN FORM INSPEKSI -->
     <div id="panel-main" class="hidden">
       
       <!-- Operator Info Header -->
-      <div class="ios-card" style="padding: 12px 16px; background: rgba(0, 122, 255, 0.08);">
-        <span style="font-size: 13px; font-weight: 500; color: var(--ios-primary);">
-          👤 Operator: <b id="display-operator" style="font-weight: 700;">-</b>
-        </span>
+      <div class="ios-card" style="padding: 12px 16px; background: rgba(24, 101, 207, 0.06); border-color: rgba(24, 101, 207, 0.2);">
+        <div style="font-size: 13px; color: var(--ios-primary); display: flex; justify-content: space-between;">
+          <span>👤 Operator: <b id="display-operator">-</b></span>
+          <span>🏢 Dept: <b id="display-dept">-</b></span>
+        </div>
       </div>
 
-      <!-- STEP 1: SCAN BARCODE NCP/VIN -->
+      <!-- STEP 1: SCAN / INPUT VIN -->
       <div class="ios-card">
-        <div class="card-header">1. Scan Barcode NCP / VIN</div>
-        <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan Barcode VIN (1D)</button>
+        <div class="card-header">1. Barcode / Nomor VIN</div>
+        <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan Barcode VIN</button>
         
         <div id="scanner-container">
           <video id="video"></video>
@@ -190,16 +279,15 @@
           <button class="ios-btn btn-secondary" style="margin-top: 8px; border-radius: 0;" onclick="stopScanner()">Tutup Kamera</button>
         </div>
 
-        <label>Nomor NCP / VIN:</label>
-        <input type="text" id="vin-number" placeholder="Hasil scan barcode..." readonly>
+        <label style="margin-top: 14px;">Nomor VIN (Bisa Ketik Manual):</label>
+        <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ013523">
       </div>
 
-      <!-- STEP 2: FOTO PANEL (GALERI / KAMERA) -->
+      <!-- STEP 2: FOTO PANEL (10 FOTO DENGAN KOMPRESI OTOMATIS) -->
       <div class="ios-card">
         <div class="card-header">2. Foto Panel Mobil (10 Slot)</div>
         <div class="photo-grid">
           
-          <!-- Item 1 -->
           <div class="photo-box">
             <span>1. Front Fender Right</span>
             <button class="btn-upload" onclick="triggerPhoto('ffr')">📷 / 🖼️ Pilih Foto</button>
@@ -207,7 +295,6 @@
             <img id="img-ffr" class="photo-preview">
           </div>
 
-          <!-- Item 2 -->
           <div class="photo-box">
             <span>2. Front Fender Left</span>
             <button class="btn-upload" onclick="triggerPhoto('ffl')">📷 / 🖼️ Pilih Foto</button>
@@ -215,7 +302,6 @@
             <img id="img-ffl" class="photo-preview">
           </div>
 
-          <!-- Item 3 -->
           <div class="photo-box">
             <span>3. Upper Roof</span>
             <button class="btn-upload" onclick="triggerPhoto('ur')">📷 / 🖼️ Pilih Foto</button>
@@ -223,7 +309,6 @@
             <img id="img-ur" class="photo-preview">
           </div>
 
-          <!-- Item 4 -->
           <div class="photo-box">
             <span>4. Lower Roof</span>
             <button class="btn-upload" onclick="triggerPhoto('lr')">📷 / 🖼️ Pilih Foto</button>
@@ -231,7 +316,6 @@
             <img id="img-lr" class="photo-preview">
           </div>
 
-          <!-- Item 5 -->
           <div class="photo-box">
             <span>5. Front Right Door</span>
             <button class="btn-upload" onclick="triggerPhoto('frd')">📷 / 🖼️ Pilih Foto</button>
@@ -239,7 +323,6 @@
             <img id="img-frd" class="photo-preview">
           </div>
 
-          <!-- Item 6 -->
           <div class="photo-box">
             <span>6. Front Left Door</span>
             <button class="btn-upload" onclick="triggerPhoto('fld')">📷 / 🖼️ Pilih Foto</button>
@@ -247,7 +330,6 @@
             <img id="img-fld" class="photo-preview">
           </div>
 
-          <!-- Item 7 -->
           <div class="photo-box">
             <span>7. Rear Right Door</span>
             <button class="btn-upload" onclick="triggerPhoto('rrd')">📷 / 🖼️ Pilih Foto</button>
@@ -255,7 +337,6 @@
             <img id="img-rrd" class="photo-preview">
           </div>
 
-          <!-- Item 8 -->
           <div class="photo-box">
             <span>8. Rear Left Door</span>
             <button class="btn-upload" onclick="triggerPhoto('rld')">📷 / 🖼️ Pilih Foto</button>
@@ -263,7 +344,6 @@
             <img id="img-rld" class="photo-preview">
           </div>
 
-          <!-- Item 9 -->
           <div class="photo-box">
             <span>9. Tailgate</span>
             <button class="btn-upload" onclick="triggerPhoto('tg')">📷 / 🖼️ Pilih Foto</button>
@@ -271,10 +351,9 @@
             <img id="img-tg" class="photo-preview">
           </div>
 
-          <!-- Item 10 -->
-          <div class="photo-box" style="background: rgba(255, 149, 0, 0.05); border-color: rgba(255, 149, 0, 0.3);">
+          <div class="photo-box" style="background: rgba(255, 149, 0, 0.06); border-color: rgba(255, 149, 0, 0.4);">
             <span style="color: #c77700;">10. Foto NG Tambahan</span>
-            <button class="btn-upload" style="color: #c77700;" onclick="triggerPhoto('addNg')">📷 / 🖼️ Pilih Foto</button>
+            <button class="btn-upload" style="color: #c77700; border-color: #c77700;" onclick="triggerPhoto('addNg')">📷 / 🖼️ Pilih Foto</button>
             <input type="file" id="file-addNg" accept="image/*" onchange="previewPhoto('addNg')">
             <img id="img-addNg" class="photo-preview">
           </div>
@@ -291,8 +370,8 @@
           <div id="btn-ng" class="segment-btn" onclick="setStatus('NG')">NG</div>
         </div>
 
-        <label>Keterangan / Catatan:</label>
-        <textarea id="keterangan" placeholder="Masukkan detail jika ada temuan..."></textarea>
+        <label style="margin-top: 14px;">Keterangan / Catatan Cacat:</label>
+        <textarea id="keterangan" placeholder="Detail temuan cacat/penjelasan..."></textarea>
       </div>
 
       <!-- SUBMIT BUTTON -->
@@ -309,7 +388,7 @@
         <div id="modal-spinner" class="spinner hidden"></div>
         <div id="modal-icon" class="modal-icon hidden"></div>
         <div id="modal-title" class="modal-title">Judul</div>
-        <div id="modal-sub" class="modal-sub">Deskripsi pesan akan muncul di sini...</div>
+        <div id="modal-sub" class="modal-sub">Deskripsi pesan...</div>
       </div>
       <div id="modal-actions" class="modal-actions hidden">
         <button id="modal-btn-action" class="modal-btn" onclick="closeModal()">OK</button>
@@ -319,7 +398,7 @@
 
   <script>
     // ================================================================
-    // URL DEPLOYMENT APPS SCRIPT SPREADSHEET TERTULIS AUTOMATIS
+    // URL DEPLOYMENT APPS SCRIPT
     // ================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_wEhvszwvr5Tz5YaWKTT1qApLCEihioGrz5CRshazs0iTy1Kc1AVBg2igkBUSy5RF/exec";
 
@@ -331,21 +410,35 @@
       if(localStorage.getItem("operator")) {
         document.getElementById("operator-name").value = localStorage.getItem("operator");
       }
+      if(localStorage.getItem("department")) {
+        document.getElementById("operator-dept").value = localStorage.getItem("department");
+      }
     };
 
     function login() {
       const name = document.getElementById("operator-name").value.trim();
+      const dept = document.getElementById("operator-dept").value;
+
       if(!name) { 
-        showModal('error', 'Nama Operator', 'Silakan masukkan nama atau NPK Anda.');
+        showModal('error', 'Nama Lengkap', 'Silakan masukkan nama lengkap Anda.');
         return; 
       }
+      if(!dept) { 
+        showModal('error', 'Departemen', 'Silakan pilih departemen Anda.');
+        return; 
+      }
+
       localStorage.setItem("operator", name);
+      localStorage.setItem("department", dept);
+
       document.getElementById("display-operator").innerText = name;
+      document.getElementById("display-dept").innerText = dept;
+
       document.getElementById("panel-login").classList.add("hidden");
       document.getElementById("panel-main").classList.remove("hidden");
     }
 
-    // --- SCANNER BARCODE ---
+    // --- SCANNER BARCODE VIN ---
     function startScanner() {
       document.getElementById("scanner-container").style.display = "block";
       codeReader = new ZXing.BrowserMultiFormatReader();
@@ -354,7 +447,7 @@
         if (result) {
           document.getElementById("vin-number").value = result.text;
           stopScanner();
-          showModal('success', 'Barcode Terbaca', 'No NCP/VIN: ' + result.text);
+          showModal('success', 'Barcode Terbaca', 'Nomor VIN: ' + result.text);
         }
       }).catch(err => console.error(err));
     }
@@ -364,7 +457,7 @@
       document.getElementById("scanner-container").style.display = "none";
     }
 
-    // --- UPLOAD FOTO (GALERI / KAMERA) ---
+    // --- FOTO & KOMPRESI CEPAT (CLIENT-SIDE CANVAS) ---
     function triggerPhoto(id) {
       document.getElementById("file-" + id).click();
     }
@@ -374,9 +467,11 @@
       const imgPreview = document.getElementById("img-" + id);
       
       if (fileInput.files && fileInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          imgPreview.src = e.target.result;
+        const file = fileInput.files[0];
+        
+        // Kompresi Gambar Cepat ke Canvas Max 1920px (JPEG Quality 82%)
+        compressImage(file, 1920, 1920, 0.82, function(compressedBase64) {
+          imgPreview.src = compressedBase64;
           imgPreview.style.display = "block";
           
           const keyMapping = {
@@ -387,10 +482,45 @@
             'tg': 'tailgate', 'addNg': 'additionalNg'
           };
           
-          photoData[keyMapping[id]] = { base64: e.target.result };
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+          photoData[keyMapping[id]] = { base64: compressedBase64 };
+        });
       }
+    }
+
+    // Helper Kompresi Gambar
+    function compressImage(file, maxWidth, maxHeight, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          callback(compressedDataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
 
     // --- STATUS OKE / NG ---
@@ -408,24 +538,24 @@
       }
     }
 
-    // --- SUBMIT DATA WITH POP-UP MODAL ---
+    // --- SUBMIT DATA FAST ---
     function submitData() {
       const vin = document.getElementById("vin-number").value.trim();
       if (!vin) {
-        showModal('error', 'Data Belum Lengkap', 'Silakan scan Barcode NCP/VIN terlebih dahulu!');
+        showModal('error', 'Nomor VIN Kosong', 'Silakan scan barcode atau ketik nomor VIN terlebih dahulu!');
         return;
       }
 
       const payload = {
         operator: localStorage.getItem("operator"),
+        department: localStorage.getItem("department"),
         vin: vin,
         photos: photoData,
         status: selectedStatus,
         keterangan: document.getElementById("keterangan").value
       };
 
-      // Tampilkan Modal Loading
-      showModal('loading', 'Mengirim Data', 'Sedang mengunggah foto ke Google Drive & menyimpan data ke Spreadsheet...');
+      showModal('loading', 'Mengirim Data Cepat', 'Memproses & mengunggah data NC Report BIP...');
 
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
@@ -434,14 +564,14 @@
         body: JSON.stringify(payload)
       })
       .then(() => {
-        showModal('success_reload', 'Berhasil Disimpan', 'Data NCP-BIP & Foto telah sukses terunggah.');
+        showModal('success_reload', 'Berhasil Disimpan', 'Data NC Report BIP berhasil disimpan.');
       })
       .catch(err => {
         showModal('error', 'Gagal Mengirim', 'Terjadi kesalahan: ' + err);
       });
     }
 
-    // --- iOS MODAL HELPER ---
+    // --- MODAL HELPER ---
     let reloadOnModalClose = false;
 
     function showModal(type, title, message) {
