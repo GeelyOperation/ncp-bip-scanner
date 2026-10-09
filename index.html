@@ -80,6 +80,7 @@
       cursor: pointer; text-align: center; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .ios-btn:active { opacity: 0.8; transform: scale(0.98); }
+    .ios-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-primary { background: var(--ios-primary); color: white; }
     .btn-success { background: var(--ios-success); color: white; }
     .btn-secondary { background: #e5e5ea; color: var(--ios-text); }
@@ -99,7 +100,6 @@
     .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
-    /* FULL-SCREEN SCANNER MODAL */
     .scanner-modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: #eef2f6; z-index: 2000; display: flex; flex-direction: column;
@@ -113,35 +113,15 @@
       background: rgba(255,255,255,0.2); border: none; color: white;
       padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
-    .scanner-nav-title {
-      font-size: 16px; font-weight: 700; text-align: center;
-    }
-    .scanner-content {
-      flex: 1; padding: 20px 16px; display: flex; align-items: center; justify-content: center;
-    }
-    .scanner-card {
-      background: #ffffff; border-radius: 24px; padding: 20px 16px; width: 100%; max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center;
-    }
-    .scanner-card-title {
-      font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px;
-    }
-    .viewfinder-box {
-      position: relative; width: 100%; height: 320px; border-radius: 20px; overflow: hidden; background: #000;
-    }
-    .viewfinder-box video {
-      width: 100%; height: 100%; object-fit: cover;
-    }
-    .target-frame {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 220px; height: 220px; border: 3.5px solid #ffffff; border-radius: 28px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); pointer-events: none;
-    }
-    .scanner-hint {
-      margin-top: 14px; font-size: 13px; color: #6b7280; font-weight: 500;
-    }
+    .scanner-nav-title { font-size: 16px; font-weight: 700; text-align: center; }
+    .scanner-content { flex: 1; padding: 20px 16px; display: flex; align-items: center; justify-content: center; }
+    .scanner-card { background: #ffffff; border-radius: 24px; padding: 20px 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center; }
+    .scanner-card-title { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px; }
+    .viewfinder-box { position: relative; width: 100%; height: 320px; border-radius: 20px; overflow: hidden; background: #000; }
+    .viewfinder-box video { width: 100%; height: 100%; object-fit: cover; }
+    .target-frame { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 220px; border: 3.5px solid #ffffff; border-radius: 28px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); pointer-events: none; }
+    .scanner-hint { margin-top: 14px; font-size: 13px; color: #6b7280; font-weight: 500; }
 
-    /* FLOATING BADGE INDIKATOR ANTREAN */
     .floating-badge {
       position: fixed; bottom: 18px; right: 18px; z-index: 999;
       display: flex; align-items: center; gap: 8px; padding: 10px 16px;
@@ -162,11 +142,7 @@
       display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    
-    .ios-modal {
-      width: 290px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-radius: 18px; text-align: center; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: scale(1.05); transition: transform 0.2s ease;
-    }
+    .ios-modal { width: 290px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 18px; text-align: center; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); transform: scale(1.05); transition: transform 0.2s ease; }
     .modal-overlay.active .ios-modal { transform: scale(1); }
     .modal-content { padding: 22px 18px; }
     .modal-icon { font-size: 38px; margin-bottom: 8px; }
@@ -174,11 +150,7 @@
     .modal-sub { font-size: 13px; color: #6b7280; line-height: 1.4; }
     .modal-actions { border-top: 0.5px solid var(--ios-border); display: flex; }
     .modal-btn { flex: 1; padding: 13px; font-size: 16px; font-weight: 600; color: var(--ios-primary); background: transparent; border: none; cursor: pointer; }
-
-    .spinner {
-      width: 32px; height: 32px; border: 3px solid rgba(24, 101, 207, 0.15);
-      border-top-color: var(--ios-primary); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px auto;
-    }
+    .spinner { width: 32px; height: 32px; border: 3px solid rgba(24, 101, 207, 0.15); border-top-color: var(--ios-primary); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px auto; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -229,7 +201,6 @@
 
     <!-- MAIN FORM -->
     <div id="panel-main" class="hidden">
-      
       <div class="ios-card" style="padding: 12px 16px; background: rgba(24, 101, 207, 0.06); border-color: rgba(24, 101, 207, 0.2);">
         <div style="font-size: 13px; color: var(--ios-primary); display: flex; justify-content: space-between; align-items: center;">
           <div>
@@ -239,7 +210,6 @@
         </div>
       </div>
 
-      <!-- SCAN / INPUT VIN -->
       <div class="ios-card">
         <div class="card-header">1. Scan QR Code / Nomor VIN</div>
         <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan QR Code VIN</button>
@@ -248,13 +218,9 @@
         <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ014140" oninput="handleManualVinInput(this.value)">
       </div>
 
-      <!-- FOTO PANEL 1 - 10 -->
       <div class="ios-card">
         <div class="card-header">2. Foto Panel Mobil (Panel 1 - 10)</div>
-        
-        <button class="ios-btn btn-fast" onclick="triggerBulkUpload()">
-          ⚡ Pilih Foto Panel 1–10
-        </button>
+        <button class="ios-btn btn-fast" onclick="triggerBulkUpload()">⚡ Pilih Foto Panel 1–10</button>
         <input type="file" id="bulk-photo-input" accept="image/*" multiple style="display:none;" onchange="handleBulkPhotos(this)">
         <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 6px;">Pilih hingga 10 foto sekaligus dari galeri/kamera untuk terisi otomatis.</p>
 
@@ -278,7 +244,6 @@
         </div>
       </div>
 
-      <!-- STATUS & KETERANGAN -->
       <div class="ios-card">
         <div class="card-header">3. Hasil Inspeksi</div>
         <label>Status Unit:</label>
@@ -292,12 +257,10 @@
       </div>
 
       <button class="ios-btn btn-success" id="btn-submit" onclick="submitData()">🚀 Simpan Data Inspeksi</button>
-
     </div>
 
   </div>
 
-  <!-- FULL SCREEN SCANNER MODAL SCREEN -->
   <div id="scanner-modal" class="scanner-modal-overlay hidden">
     <div class="scanner-navbar">
       <button class="scanner-nav-btn" onclick="stopScanner()">← Back 返回</button>
@@ -360,14 +323,8 @@
       const name = document.getElementById("operator-name").value.trim();
       const dept = document.getElementById("operator-dept").value;
 
-      if(!name) { 
-        showModal('error', 'Nama Lengkap', 'Silakan masukkan nama lengkap Anda.');
-        return; 
-      }
-      if(!dept) { 
-        showModal('error', 'Departemen', 'Silakan pilih departemen Anda.');
-        return; 
-      }
+      if(!name) { showModal('error', 'Nama Lengkap', 'Silakan masukkan nama lengkap Anda.'); return; }
+      if(!dept) { showModal('error', 'Departemen', 'Silakan pilih departemen Anda.'); return; }
 
       localStorage.setItem("operator", name);
       localStorage.setItem("department", dept);
@@ -389,14 +346,12 @@
     function startScanner() {
       document.getElementById("scanner-modal").classList.remove("hidden");
 
-      // Konfigurasi Hints: Fokus QR Code + TRY_HARDER untuk sudut miring / gelap
       const hints = new Map();
       hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
       hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
 
       codeReader = new ZXing.BrowserMultiFormatReader(hints);
 
-      // Resolusi Full HD 1080p agar tajam dari jarak jauh
       const constraints = {
         video: {
           facingMode: "environment",
@@ -581,6 +536,10 @@
         return;
       }
 
+      // Matikan tombol submit untuk mencegah Double Click
+      const btnSubmit = document.getElementById("btn-submit");
+      btnSubmit.disabled = true;
+
       const payload = {
         id: Date.now(),
         operator: localStorage.getItem("operator"),
@@ -613,7 +572,9 @@
       isSyncing = true;
       updateQueueBadge();
 
-      const item = queue[0];
+      // Ambil dan hapus item dari antrean lokal agar tidak terkirim dua kali saat retry
+      const item = queue.shift();
+      saveQueue(queue);
 
       try {
         await fetch(APPS_SCRIPT_URL, {
@@ -622,13 +583,12 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(item)
         });
-
-        const currentQueue = getQueue();
-        currentQueue.shift();
-        saveQueue(currentQueue);
-
       } catch (err) {
         console.error("Gagal mengirim antrean:", err);
+        // Jika gagal koneksi, masukkan kembali ke antrean
+        const currentQueue = getQueue();
+        currentQueue.unshift(item);
+        saveQueue(currentQueue);
       } finally {
         isSyncing = false;
         updateQueueBadge();
@@ -670,6 +630,7 @@
       document.getElementById("vin-number").value = "";
       document.getElementById("keterangan").value = "";
       document.getElementById("bulk-photo-input").value = "";
+      document.getElementById("btn-submit").disabled = false;
       scannedRawQr = "";
       setStatus("OK");
       photoData = {};
