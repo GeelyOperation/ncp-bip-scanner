@@ -102,7 +102,6 @@
     .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
-    /* FLOATING BADGE INDIKATOR ANTREAN */
     .floating-badge {
       position: fixed; bottom: 18px; right: 18px; z-index: 999;
       display: flex; align-items: center; gap: 8px; padding: 10px 16px;
@@ -219,7 +218,6 @@
       <div class="ios-card">
         <div class="card-header">2. Foto Panel Mobil (Panel 1 - 10)</div>
         
-        <!-- MULTI-SELECT BUTTON -->
         <button class="ios-btn btn-fast" onclick="triggerBulkUpload()">
           ⚡ Pilih Foto Panel 1–10
         </button>
@@ -227,8 +225,6 @@
         <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 6px;">Pilih hingga 10 foto sekaligus dari galeri/kamera untuk terisi otomatis.</p>
 
         <div class="photo-grid">
-          
-          <!-- Loop Panel 1 s/d Panel 10 -->
           <script>
             for(let i=1; i<=10; i++) {
               document.write(`
@@ -245,7 +241,6 @@
               `);
             }
           </script>
-
         </div>
       </div>
 
@@ -254,7 +249,7 @@
         <div class="card-header">3. Hasil Inspeksi</div>
         <label>Status Unit:</label>
         <div class="segmented-control">
-          <div id="btn-oke" class="segment-btn active-oke" onclick="setStatus('OKE')">OKE</div>
+          <div id="btn-oke" class="segment-btn active-oke" onclick="setStatus('OK')">OK</div>
           <div id="btn-ng" class="segment-btn" onclick="setStatus('NG')">NG</div>
         </div>
 
@@ -268,12 +263,8 @@
 
   </div>
 
-  <!-- FLOATING BADGE INDIKATOR ANTREAN -->
-  <div id="queue-badge" class="floating-badge hidden" onclick="processQueue()">
-    <!-- Terisi dinamis -->
-  </div>
+  <div id="queue-badge" class="floating-badge hidden" onclick="processQueue()"></div>
 
-  <!-- POPUP MODAL -->
   <div id="modal-overlay" class="modal-overlay">
     <div class="ios-modal">
       <div class="modal-content">
@@ -292,7 +283,7 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_wEhvszwvr5Tz5YaWKTT1qApLCEihioGrz5CRshazs0iTy1Kc1AVBg2igkBUSy5RF/exec";
 
     let codeReader = null;
-    let selectedStatus = "OKE";
+    let selectedStatus = "OK";
     let photoData = {};
     let resetOnModalClose = false;
     let isSyncing = false;
@@ -449,7 +440,7 @@
       const okeBtn = document.getElementById("btn-oke");
       const ngBtn = document.getElementById("btn-ng");
       
-      if (status === "OKE") {
+      if (status === "OK") {
         okeBtn.className = "segment-btn active-oke";
         ngBtn.className = "segment-btn";
       } else {
@@ -458,7 +449,6 @@
       }
     }
 
-    /* SISTEM ANTREAN LOKAL (OFFLINE QUEUE) */
     function getQueue() {
       return JSON.parse(localStorage.getItem("inspection_queue") || "[]");
     }
@@ -484,16 +474,13 @@
         keterangan: document.getElementById("keterangan").value
       };
 
-      // 1. Simpan ke LocalStorage HP
       const queue = getQueue();
       queue.push(payload);
       saveQueue(queue);
 
-      // 2. Tampilkan pesan berhasil & reset form instan
       showModal('success_reset', 'Berhasil Disimpan', 'Data aman tersimpan di HP & otomatis dikirim di latar belakang.');
       updateQueueBadge();
 
-      // 3. Jalankan pengiriman di background
       processQueue();
     }
 
@@ -518,7 +505,6 @@
           body: JSON.stringify(item)
         });
 
-        // Hapus data yang berhasil terkirim dari antrean
         const currentQueue = getQueue();
         currentQueue.shift();
         saveQueue(currentQueue);
@@ -559,7 +545,6 @@
       }
     }
 
-    // Auto retry kirim data tiap 15 detik atau saat koneksi internet terhubung
     window.addEventListener('online', processQueue);
     setInterval(processQueue, 15000);
 
@@ -567,7 +552,7 @@
       document.getElementById("vin-number").value = "";
       document.getElementById("keterangan").value = "";
       document.getElementById("bulk-photo-input").value = "";
-      setStatus("OKE");
+      setStatus("OK");
       photoData = {};
 
       for(let i=1; i<=10; i++) {
