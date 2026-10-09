@@ -16,6 +16,7 @@
       --ios-text: #1c1c1e;
       --ios-subtext: #8e8e93;
       --ios-border: #e2e8f0;
+      --geely-blue: #0f52ba;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -84,10 +85,6 @@
     .btn-secondary { background: #e5e5ea; color: var(--ios-text); }
     .btn-fast { background: #34c759; color: white; font-weight: 700; font-size: 15px; padding: 14px; border-radius: 12px; }
 
-    #scanner-container { position: relative; display: none; margin-top: 12px; border-radius: 14px; overflow: hidden; background: #000; }
-    #video { width: 100%; height: 220px; object-fit: cover; }
-    .scanner-target { position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: var(--ios-danger); box-shadow: 0 0 10px var(--ios-danger); }
-
     .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .photo-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 10px; text-align: center; position: relative; }
     .photo-box span { font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px; line-height: 1.2; }
@@ -102,6 +99,49 @@
     .segment-btn.active-oke { background: #ffffff; color: var(--ios-success); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .segment-btn.active-ng { background: #ffffff; color: var(--ios-danger); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
+    /* FULL-SCREEN SCANNER MODAL */
+    .scanner-modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #eef2f6; z-index: 2000; display: flex; flex-direction: column;
+    }
+    .scanner-navbar {
+      background: var(--geely-blue); color: white; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .scanner-back-btn {
+      background: rgba(255,255,255,0.2); border: none; color: white;
+      padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .scanner-nav-title {
+      font-size: 16px; font-weight: 700; flex: 1; text-align: center; margin-right: 50px;
+    }
+    .scanner-content {
+      flex: 1; padding: 20px 16px; display: flex; align-items: center; justify-content: center;
+    }
+    .scanner-card {
+      background: #ffffff; border-radius: 24px; padding: 20px 16px; width: 100%; max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-align: center;
+    }
+    .scanner-card-title {
+      font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 16px;
+    }
+    .viewfinder-box {
+      position: relative; width: 100%; height: 320px; border-radius: 20px; overflow: hidden; background: #000;
+    }
+    .viewfinder-box video {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .target-frame {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 220px; height: 220px; border: 3.5px solid #ffffff; border-radius: 28px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); pointer-events: none;
+    }
+    .scanner-hint {
+      margin-top: 18px; font-size: 13px; color: #6b7280; font-weight: 500;
+    }
+
+    /* FLOATING BADGE INDIKATOR ANTREAN */
     .floating-badge {
       position: fixed; bottom: 18px; right: 18px; z-index: 999;
       display: flex; align-items: center; gap: 8px; padding: 10px 16px;
@@ -203,12 +243,6 @@
       <div class="ios-card">
         <div class="card-header">1. Scan QR Code / Nomor VIN</div>
         <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan QR Code VIN</button>
-        
-        <div id="scanner-container">
-          <video id="video"></video>
-          <div class="scanner-target"></div>
-          <button class="ios-btn btn-secondary" style="margin-top: 8px; border-radius: 0;" onclick="stopScanner()">Tutup Kamera</button>
-        </div>
 
         <label style="margin-top: 14px;">Nomor VIN (Otomatis / Ketik Manual):</label>
         <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ014140" oninput="handleManualVinInput(this.value)">
@@ -261,6 +295,24 @@
 
     </div>
 
+  </div>
+
+  <!-- FULL SCREEN SCANNER MODAL SCREEN -->
+  <div id="scanner-modal" class="scanner-modal-overlay hidden">
+    <div class="scanner-navbar">
+      <button class="scanner-back-btn" onclick="stopScanner()">← Back 返回</button>
+      <div class="scanner-nav-title">Scan QR Code 扫描二维码</div>
+    </div>
+    <div class="scanner-content">
+      <div class="scanner-card">
+        <div class="scanner-card-title">Scan part label 扫描零件标签</div>
+        <div class="viewfinder-box">
+          <video id="video" playsinline></video>
+          <div class="target-frame"></div>
+        </div>
+        <div class="scanner-hint">Point camera at QR code 将相机对准二维码</div>
+      </div>
+    </div>
   </div>
 
   <div id="queue-badge" class="floating-badge hidden" onclick="processQueue()"></div>
@@ -334,15 +386,27 @@
     }
 
     function startScanner() {
-      document.getElementById("scanner-container").style.display = "block";
-      codeReader = new ZXing.BrowserMultiFormatReader();
-      
-      codeReader.decodeFromVideoDevice(undefined, 'video', (result, err) => {
+      document.getElementById("scanner-modal").classList.remove("hidden");
+
+      // Set Decode Hints khusus format QR Code agar pindaian jauh lebih cepat & sensitif
+      const hints = new Map();
+      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
+
+      codeReader = new ZXing.BrowserMultiFormatReader(hints);
+
+      const constraints = {
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      codeReader.decodeFromConstraints(constraints, 'video', (result, err) => {
         if (result) {
           const fullQrText = result.text.trim();
           scannedRawQr = fullQrText;
           
-          // Potong karakter bintang (*) dan karakter setelahnya
           let cleanVin = fullQrText.split("*")[0].trim();
           cleanVin = cleanVin.replace(/^NCP-BIP-/i, "");
 
@@ -350,12 +414,24 @@
           stopScanner();
           showModal('success', 'QR Code Terbaca', 'VIN: ' + cleanVin);
         }
-      }).catch(err => console.error(err));
+      }).catch(err => {
+        // Fallback untuk perangkat yang tidak mendukung pencarian constraint khusus
+        codeReader.decodeFromVideoDevice(undefined, 'video', (result, err) => {
+          if (result) {
+            const fullQrText = result.text.trim();
+            scannedRawQr = fullQrText;
+            let cleanVin = fullQrText.split("*")[0].trim().replace(/^NCP-BIP-/i, "");
+            document.getElementById("vin-number").value = cleanVin;
+            stopScanner();
+            showModal('success', 'QR Code Terbaca', 'VIN: ' + cleanVin);
+          }
+        });
+      });
     }
 
     function stopScanner() {
       if (codeReader) { codeReader.reset(); }
-      document.getElementById("scanner-container").style.display = "none";
+      document.getElementById("scanner-modal").classList.add("hidden");
     }
 
     function handleManualVinInput(value) {
