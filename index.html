@@ -19,7 +19,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--ios-bg); color: var(--ios-text); padding-bottom: 60px; }
+    body { background-color: var(--ios-bg); color: var(--ios-text); padding-bottom: 70px; }
 
     .ios-navbar {
       position: sticky; top: 0; z-index: 100;
@@ -82,7 +82,7 @@
     .btn-primary { background: var(--ios-primary); color: white; }
     .btn-success { background: var(--ios-success); color: white; }
     .btn-secondary { background: #e5e5ea; color: var(--ios-text); }
-    .btn-fast { background: #34c759; color: white; font-weight: 700; font-size: 16px; padding: 16px; border-radius: 14px; }
+    .btn-fast { background: #34c759; color: white; font-weight: 700; font-size: 15px; padding: 14px; border-radius: 12px; }
 
     #scanner-container { position: relative; display: none; margin-top: 12px; border-radius: 14px; overflow: hidden; background: #000; }
     #video { width: 100%; height: 220px; object-fit: cover; }
@@ -90,12 +90,12 @@
 
     .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .photo-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 10px; text-align: center; position: relative; }
-    .photo-box span { font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px; line-height: 1.2; }
+    .photo-box span { font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px; line-height: 1.2; }
     .photo-box input[type="file"] { display: none; }
     .photo-preview { width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 6px; display: none; border: 1px solid var(--ios-border); }
     
     .btn-photo-group { display: flex; gap: 4px; }
-    .btn-upload { background: #ffffff; color: var(--ios-primary); border: 1px solid var(--ios-primary); padding: 5px 4px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; }
+    .btn-upload { background: #ffffff; color: var(--ios-primary); border: 1px solid var(--ios-primary); padding: 5px 4px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
 
     .segmented-control { display: flex; background: #e2e8f0; padding: 3px; border-radius: 10px; margin-top: 8px; }
     .segment-btn { flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; color: #64748b; }
@@ -104,7 +104,7 @@
 
     /* FLOATING BADGE INDIKATOR ANTREAN */
     .floating-badge {
-      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      position: fixed; bottom: 18px; right: 18px; z-index: 999;
       display: flex; align-items: center; gap: 8px; padding: 10px 16px;
       border-radius: 30px; font-size: 13px; font-weight: 700;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -215,127 +215,36 @@
         <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ013523">
       </div>
 
-      <!-- FOTO PANEL -->
+      <!-- FOTO PANEL 1 - 10 -->
       <div class="ios-card">
-        <div class="card-header">2. Foto Panel Mobil</div>
+        <div class="card-header">2. Foto Panel Mobil (Panel 1 - 10)</div>
         
+        <!-- MULTI-SELECT BUTTON -->
         <button class="ios-btn btn-fast" onclick="triggerBulkUpload()">
-          ⚡ Upload 10 Foto Sekaligus
+          ⚡ Pilih Foto Panel 1–10
         </button>
         <input type="file" id="bulk-photo-input" accept="image/*" multiple style="display:none;" onchange="handleBulkPhotos(this)">
-        <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 6px;">Foto dari kamera HP akan terisi otomatis secara berurutan (1 s/d 10).</p>
+        <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 6px;">Pilih hingga 10 foto sekaligus dari galeri/kamera untuk terisi otomatis.</p>
 
         <div class="photo-grid">
           
-          <div class="photo-box">
-            <span>1. Front Fender Right</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('ffr', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('ffr', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-ffr-cam" accept="image/*" capture="environment" onchange="previewPhoto('ffr', 'cam')">
-            <input type="file" id="file-ffr-gal" accept="image/*" onchange="previewPhoto('ffr', 'gal')">
-            <img id="img-ffr" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>2. Front Fender Left</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('ffl', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('ffl', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-ffl-cam" accept="image/*" capture="environment" onchange="previewPhoto('ffl', 'cam')">
-            <input type="file" id="file-ffl-gal" accept="image/*" onchange="previewPhoto('ffl', 'gal')">
-            <img id="img-ffl" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>3. Upper Roof</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('ur', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('ur', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-ur-cam" accept="image/*" capture="environment" onchange="previewPhoto('ur', 'cam')">
-            <input type="file" id="file-ur-gal" accept="image/*" onchange="previewPhoto('ur', 'gal')">
-            <img id="img-ur" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>4. Lower Roof</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('lr', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('lr', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-lr-cam" accept="image/*" capture="environment" onchange="previewPhoto('lr', 'cam')">
-            <input type="file" id="file-lr-gal" accept="image/*" onchange="previewPhoto('lr', 'gal')">
-            <img id="img-lr" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>5. Front Right Door</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('frd', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('frd', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-frd-cam" accept="image/*" capture="environment" onchange="previewPhoto('frd', 'cam')">
-            <input type="file" id="file-frd-gal" accept="image/*" onchange="previewPhoto('frd', 'gal')">
-            <img id="img-frd" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>6. Front Left Door</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('fld', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('fld', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-fld-cam" accept="image/*" capture="environment" onchange="previewPhoto('fld', 'cam')">
-            <input type="file" id="file-fld-gal" accept="image/*" onchange="previewPhoto('fld', 'gal')">
-            <img id="img-fld" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>7. Rear Right Door</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('rrd', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('rrd', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-rrd-cam" accept="image/*" capture="environment" onchange="previewPhoto('rrd', 'cam')">
-            <input type="file" id="file-rrd-gal" accept="image/*" onchange="previewPhoto('rrd', 'gal')">
-            <img id="img-rrd" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>8. Rear Left Door</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('rld', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('rld', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-rld-cam" accept="image/*" capture="environment" onchange="previewPhoto('rld', 'cam')">
-            <input type="file" id="file-rld-gal" accept="image/*" onchange="previewPhoto('rld', 'gal')">
-            <img id="img-rld" class="photo-preview">
-          </div>
-
-          <div class="photo-box">
-            <span>9. Tailgate</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" onclick="triggerPhoto('tg', 'cam')">📷</button>
-              <button class="btn-upload" onclick="triggerPhoto('tg', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-tg-cam" accept="image/*" capture="environment" onchange="previewPhoto('tg', 'cam')">
-            <input type="file" id="file-tg-gal" accept="image/*" onchange="previewPhoto('tg', 'gal')">
-            <img id="img-tg" class="photo-preview">
-          </div>
-
-          <div class="photo-box" style="background: rgba(255, 149, 0, 0.06); border-color: rgba(255, 149, 0, 0.4);">
-            <span style="color: #c77700;">10. Foto NG Tambahan</span>
-            <div class="btn-photo-group">
-              <button class="btn-upload" style="color: #c77700; border-color: #c77700;" onclick="triggerPhoto('addNg', 'cam')">📷</button>
-              <button class="btn-upload" style="color: #c77700; border-color: #c77700;" onclick="triggerPhoto('addNg', 'gal')">🖼️</button>
-            </div>
-            <input type="file" id="file-addNg-cam" accept="image/*" capture="environment" onchange="previewPhoto('addNg', 'cam')">
-            <input type="file" id="file-addNg-gal" accept="image/*" onchange="previewPhoto('addNg', 'gal')">
-            <img id="img-addNg" class="photo-preview">
-          </div>
+          <!-- Loop Panel 1 s/d Panel 10 -->
+          <script>
+            for(let i=1; i<=10; i++) {
+              document.write(`
+                <div class="photo-box">
+                  <span>Panel ${i}</span>
+                  <div class="btn-photo-group">
+                    <button class="btn-upload" onclick="triggerPhoto(${i}, 'cam')">📷 Kamera</button>
+                    <button class="btn-upload" onclick="triggerPhoto(${i}, 'gal')">🖼️ Galeri</button>
+                  </div>
+                  <input type="file" id="file-p${i}-cam" accept="image/*" capture="environment" onchange="previewPhoto(${i}, 'cam')">
+                  <input type="file" id="file-p${i}-gal" accept="image/*" onchange="previewPhoto(${i}, 'gal')">
+                  <img id="img-p${i}" class="photo-preview">
+                </div>
+              `);
+            }
+          </script>
 
         </div>
       </div>
@@ -361,7 +270,7 @@
 
   <!-- FLOATING BADGE INDIKATOR ANTREAN -->
   <div id="queue-badge" class="floating-badge hidden" onclick="processQueue()">
-    <!-- Terisi secara dinamis -->
+    <!-- Terisi dinamis -->
   </div>
 
   <!-- POPUP MODAL -->
@@ -387,13 +296,6 @@
     let photoData = {};
     let resetOnModalClose = false;
     let isSyncing = false;
-
-    const panelKeys = [
-      'frontFenderRight', 'frontFenderLeft', 'upperRoof', 'lowerRoof',
-      'frontRightDoor', 'frontLeftDoor', 'rearRightDoor', 'rearLeftDoor',
-      'tailgate', 'additionalNg'
-    ];
-    const panelShortIds = ['ffr', 'ffl', 'ur', 'lr', 'frd', 'fld', 'rrd', 'rld', 'tg', 'addNg'];
 
     window.onload = function() {
       const savedOp = localStorage.getItem("operator");
@@ -471,14 +373,14 @@
       const totalToProcess = Math.min(files.length, 10);
 
       files.slice(0, 10).forEach((file, index) => {
-        const key = panelKeys[index];
-        const shortId = panelShortIds[index];
-        const imgPreview = document.getElementById("img-" + shortId);
+        const panelNum = index + 1;
+        const panelKey = `panel${panelNum}`;
+        const imgPreview = document.getElementById(`img-p${panelNum}`);
 
         compressImage(file, 1024, 1024, 0.55, function(compressedBase64) {
           imgPreview.src = compressedBase64;
           imgPreview.style.display = "block";
-          photoData[key] = { base64: compressedBase64 };
+          photoData[panelKey] = { base64: compressedBase64 };
 
           processedCount++;
           if (processedCount === totalToProcess) {
@@ -488,13 +390,13 @@
       });
     }
 
-    function triggerPhoto(id, type) {
-      document.getElementById("file-" + id + "-" + type).click();
+    function triggerPhoto(panelNum, type) {
+      document.getElementById(`file-p${panelNum}-${type}`).click();
     }
 
-    function previewPhoto(id, type) {
-      const fileInput = document.getElementById("file-" + id + "-" + type);
-      const imgPreview = document.getElementById("img-" + id);
+    function previewPhoto(panelNum, type) {
+      const fileInput = document.getElementById(`file-p${panelNum}-${type}`);
+      const imgPreview = document.getElementById(`img-p${panelNum}`);
       
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
@@ -502,16 +404,7 @@
         compressImage(file, 1024, 1024, 0.55, function(compressedBase64) {
           imgPreview.src = compressedBase64;
           imgPreview.style.display = "block";
-          
-          const keyMapping = {
-            'ffr': 'frontFenderRight', 'ffl': 'frontFenderLeft',
-            'ur': 'upperRoof', 'lr': 'lowerRoof',
-            'frd': 'frontRightDoor', 'fld': 'frontLeftDoor',
-            'rrd': 'rearRightDoor', 'rld': 'rearLeftDoor',
-            'tg': 'tailgate', 'addNg': 'additionalNg'
-          };
-          
-          photoData[keyMapping[id]] = { base64: compressedBase64 };
+          photoData[`panel${panelNum}`] = { base64: compressedBase64 };
         });
       }
     }
@@ -565,7 +458,7 @@
       }
     }
 
-    /* MANAJEMEN ANTREAN LOKAL (OFFLINE QUEUE) */
+    /* SISTEM ANTREAN LOKAL (OFFLINE QUEUE) */
     function getQueue() {
       return JSON.parse(localStorage.getItem("inspection_queue") || "[]");
     }
@@ -596,11 +489,11 @@
       queue.push(payload);
       saveQueue(queue);
 
-      // 2. Beri notifikasi instan & reset form
+      // 2. Tampilkan pesan berhasil & reset form instan
       showModal('success_reset', 'Berhasil Disimpan', 'Data aman tersimpan di HP & otomatis dikirim di latar belakang.');
       updateQueueBadge();
 
-      // 3. Picu pengiriman
+      // 3. Jalankan pengiriman di background
       processQueue();
     }
 
@@ -625,7 +518,7 @@
           body: JSON.stringify(item)
         });
 
-        // Hapus item pertama yang sukses dikirim
+        // Hapus data yang berhasil terkirim dari antrean
         const currentQueue = getQueue();
         currentQueue.shift();
         saveQueue(currentQueue);
@@ -636,7 +529,6 @@
         isSyncing = false;
         updateQueueBadge();
 
-        // Lanjut ke antrean berikutnya jika masih ada
         if (getQueue().length > 0) {
           setTimeout(processQueue, 800);
         }
@@ -667,7 +559,7 @@
       }
     }
 
-    // Auto-retry saat ada koneksi internet lagi atau setiap 15 detik
+    // Auto retry kirim data tiap 15 detik atau saat koneksi internet terhubung
     window.addEventListener('online', processQueue);
     setInterval(processQueue, 15000);
 
@@ -678,18 +570,17 @@
       setStatus("OKE");
       photoData = {};
 
-      const fileKeys = ['ffr', 'ffl', 'ur', 'lr', 'frd', 'fld', 'rrd', 'rld', 'tg', 'addNg'];
-      fileKeys.forEach(id => {
-        const camInput = document.getElementById("file-" + id + "-cam");
-        const galInput = document.getElementById("file-" + id + "-gal");
-        const img = document.getElementById("img-" + id);
+      for(let i=1; i<=10; i++) {
+        const camInput = document.getElementById(`file-p${i}-cam`);
+        const galInput = document.getElementById(`file-p${i}-gal`);
+        const img = document.getElementById(`img-p${i}`);
         if (camInput) camInput.value = "";
         if (galInput) galInput.value = "";
         if (img) {
           img.src = "";
           img.style.display = "none";
         }
-      });
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
