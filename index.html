@@ -109,12 +109,12 @@
       display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .scanner-back-btn {
+    .scanner-nav-btn {
       background: rgba(255,255,255,0.2); border: none; color: white;
       padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
     .scanner-nav-title {
-      font-size: 16px; font-weight: 700; flex: 1; text-align: center; margin-right: 50px;
+      font-size: 16px; font-weight: 700; text-align: center;
     }
     .scanner-content {
       flex: 1; padding: 20px 16px; display: flex; align-items: center; justify-content: center;
@@ -138,7 +138,7 @@
       box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45); pointer-events: none;
     }
     .scanner-hint {
-      margin-top: 18px; font-size: 13px; color: #6b7280; font-weight: 500;
+      margin-top: 14px; font-size: 13px; color: #6b7280; font-weight: 500;
     }
 
     /* FLOATING BADGE INDIKATOR ANTREAN */
@@ -300,8 +300,9 @@
   <!-- FULL SCREEN SCANNER MODAL SCREEN -->
   <div id="scanner-modal" class="scanner-modal-overlay hidden">
     <div class="scanner-navbar">
-      <button class="scanner-back-btn" onclick="stopScanner()">← Back 返回</button>
+      <button class="scanner-nav-btn" onclick="stopScanner()">← Back 返回</button>
       <div class="scanner-nav-title">Scan QR Code 扫描二维码</div>
+      <button class="scanner-nav-btn" onclick="toggleTorch()">💡 Senter</button>
     </div>
     <div class="scanner-content">
       <div class="scanner-card">
@@ -310,7 +311,7 @@
           <video id="video" playsinline></video>
           <div class="target-frame"></div>
         </div>
-        <div class="scanner-hint">Point camera at QR code 将相机对准二维码</div>
+        <div class="scanner-hint">Arahkan kamera ke QR code. Gunakan tombol Senter jika gelap.</div>
       </div>
     </div>
   </div>
@@ -388,17 +389,19 @@
     function startScanner() {
       document.getElementById("scanner-modal").classList.remove("hidden");
 
-      // Set Decode Hints khusus format QR Code agar pindaian jauh lebih cepat & sensitif
+      // Konfigurasi Hints: Fokus QR Code + TRY_HARDER untuk sudut miring / gelap
       const hints = new Map();
       hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
+      hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
 
       codeReader = new ZXing.BrowserMultiFormatReader(hints);
 
+      // Resolusi Full HD 1080p agar tajam dari jarak jauh
       const constraints = {
         video: {
           facingMode: "environment",
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         }
       };
 
@@ -415,7 +418,6 @@
           showModal('success', 'QR Code Terbaca', 'VIN: ' + cleanVin);
         }
       }).catch(err => {
-        // Fallback untuk perangkat yang tidak mendukung pencarian constraint khusus
         codeReader.decodeFromVideoDevice(undefined, 'video', (result, err) => {
           if (result) {
             const fullQrText = result.text.trim();
@@ -432,6 +434,27 @@
     function stopScanner() {
       if (codeReader) { codeReader.reset(); }
       document.getElementById("scanner-modal").classList.add("hidden");
+    }
+
+    function toggleTorch() {
+      try {
+        const videoElem = document.getElementById("video");
+        const stream = videoElem.srcObject;
+        if (stream) {
+          const track = stream.getVideoTracks()[0];
+          const capabilities = track.getCapabilities();
+          if (capabilities.torch) {
+            const currentSettings = track.getSettings();
+            track.applyConstraints({
+              advanced: [{ torch: !currentSettings.torch }]
+            });
+          } else {
+            alert("Senter tidak didukung pada kamera ini.");
+          }
+        }
+      } catch(e) {
+        console.error("Fitur senter error:", e);
+      }
     }
 
     function handleManualVinInput(value) {
