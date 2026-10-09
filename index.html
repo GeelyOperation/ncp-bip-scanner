@@ -201,8 +201,8 @@
 
       <!-- SCAN / INPUT VIN -->
       <div class="ios-card">
-        <div class="card-header">1. Barcode / Nomor VIN</div>
-        <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan Barcode VIN</button>
+        <div class="card-header">1. Scan QR Code / Nomor VIN</div>
+        <button class="ios-btn btn-primary" onclick="startScanner()">📷 Scan QR Code VIN</button>
         
         <div id="scanner-container">
           <video id="video"></video>
@@ -210,8 +210,8 @@
           <button class="ios-btn btn-secondary" style="margin-top: 8px; border-radius: 0;" onclick="stopScanner()">Tutup Kamera</button>
         </div>
 
-        <label style="margin-top: 14px;">Nomor VIN (Bisa Ketik Manual):</label>
-        <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ013523">
+        <label style="margin-top: 14px;">Nomor VIN (Otomatis / Ketik Manual):</label>
+        <input type="text" id="vin-number" placeholder="Contoh: MGEEH40FXTJ014140" oninput="handleManualVinInput(this.value)">
       </div>
 
       <!-- FOTO PANEL 1 - 10 -->
@@ -287,6 +287,7 @@
     let photoData = {};
     let resetOnModalClose = false;
     let isSyncing = false;
+    let scannedRawQr = "";
 
     window.onload = function() {
       const savedOp = localStorage.getItem("operator");
@@ -338,9 +339,16 @@
       
       codeReader.decodeFromVideoDevice(undefined, 'video', (result, err) => {
         if (result) {
-          document.getElementById("vin-number").value = result.text;
+          const fullQrText = result.text.trim();
+          scannedRawQr = fullQrText;
+          
+          // Potong karakter bintang (*) dan karakter setelahnya
+          let cleanVin = fullQrText.split("*")[0].trim();
+          cleanVin = cleanVin.replace(/^NCP-BIP-/i, "");
+
+          document.getElementById("vin-number").value = cleanVin;
           stopScanner();
-          showModal('success', 'Barcode Terbaca', 'Nomor VIN: ' + result.text);
+          showModal('success', 'QR Code Terbaca', 'VIN: ' + cleanVin);
         }
       }).catch(err => console.error(err));
     }
@@ -348,6 +356,16 @@
     function stopScanner() {
       if (codeReader) { codeReader.reset(); }
       document.getElementById("scanner-container").style.display = "none";
+    }
+
+    function handleManualVinInput(value) {
+      if (value.includes("*")) {
+        scannedRawQr = value;
+        const cleanVal = value.split("*")[0].trim().replace(/^NCP-BIP-/i, "");
+        document.getElementById("vin-number").value = cleanVal;
+      } else {
+        scannedRawQr = value;
+      }
     }
 
     function triggerBulkUpload() {
@@ -458,9 +476,9 @@
     }
 
     function submitData() {
-      const vin = document.getElementById("vin-number").value.trim();
-      if (!vin) {
-        showModal('error', 'Nomor VIN Kosong', 'Silakan scan barcode atau ketik nomor VIN terlebih dahulu!');
+      const vinInput = document.getElementById("vin-number").value.trim();
+      if (!vinInput) {
+        showModal('error', 'Nomor VIN Kosong', 'Silakan scan QR Code atau ketik nomor VIN terlebih dahulu!');
         return;
       }
 
@@ -468,7 +486,8 @@
         id: Date.now(),
         operator: localStorage.getItem("operator"),
         department: localStorage.getItem("department"),
-        vin: vin,
+        vin: vinInput,
+        rawQr: scannedRawQr || vinInput,
         photos: photoData,
         status: selectedStatus,
         keterangan: document.getElementById("keterangan").value
@@ -552,6 +571,7 @@
       document.getElementById("vin-number").value = "";
       document.getElementById("keterangan").value = "";
       document.getElementById("bulk-photo-input").value = "";
+      scannedRawQr = "";
       setStatus("OK");
       photoData = {};
 
