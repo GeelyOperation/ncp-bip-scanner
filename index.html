@@ -536,7 +536,7 @@
         return;
       }
 
-      // Matikan tombol submit untuk mencegah Double Click
+      // Disable tombol submit untuk mencegah double tap
       const btnSubmit = document.getElementById("btn-submit");
       btnSubmit.disabled = true;
 
@@ -572,29 +572,36 @@
       isSyncing = true;
       updateQueueBadge();
 
-      // Ambil dan hapus item dari antrean lokal agar tidak terkirim dua kali saat retry
-      const item = queue.shift();
-      saveQueue(queue);
+      // PERBAIKAN UTAMA: Ambil item pertama TANPA langsung menghapusnya
+      const item = queue[0];
 
       try {
-        await fetch(APPS_SCRIPT_URL, {
+        const response = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(item)
         });
+
+        const resData = await response.json();
+
+        if (resData && resData.status === "success") {
+          // HANYA hapus dari antrean jika server berhasil merespons sukses
+          const currentQueue = getQueue();
+          currentQueue.shift();
+          saveQueue(currentQueue);
+        } else {
+          console.warn("Server sibuk atau merespons error, antrean ditahan untuk dicoba ulang:", resData);
+        }
+
       } catch (err) {
-        console.error("Gagal mengirim antrean:", err);
-        // Jika gagal koneksi, masukkan kembali ke antrean
-        const currentQueue = getQueue();
-        currentQueue.unshift(item);
-        saveQueue(currentQueue);
+        console.error("Gagal koneksi, antrean tetap tersimpan di HP untuk retry:", err);
       } finally {
         isSyncing = false;
         updateQueueBadge();
 
+        // Jeda 2.5 detik per data agar Apps Script memiliki waktu bernapas
         if (getQueue().length > 0) {
-          setTimeout(processQueue, 800);
+          setTimeout(processQueue, 2500);
         }
       }
     }
