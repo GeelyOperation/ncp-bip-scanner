@@ -88,6 +88,7 @@
 
     .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     .photo-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 10px; text-align: center; position: relative; }
+    .photo-box.tag-box { background: #eff6ff; border-color: #93c5fd; }
     .photo-box span { font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px; line-height: 1.2; }
     .photo-box input[type="file"] { display: none; }
     .photo-preview { width: 100%; height: 95px; object-fit: cover; border-radius: 8px; margin-top: 6px; display: none; border: 1px solid var(--ios-border); }
@@ -219,24 +220,48 @@
       </div>
 
       <div class="ios-card">
-        <div class="card-header">2. Foto Panel Mobil (Panel 1 - 10)</div>
-        <button class="ios-btn btn-fast" onclick="triggerBulkUpload()">⚡ Pilih Foto Panel 1–10</button>
+        <div class="card-header">2. Foto Inspeksi (12 Foto)</div>
+        <button class="ios-btn btn-fast" onclick="triggerBulkUpload()">⚡ Pilih Foto Sekaligus (Galeri)</button>
         <input type="file" id="bulk-photo-input" accept="image/*" multiple style="display:none;" onchange="handleBulkPhotos(this)">
-        <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 6px;">Pilih hingga 10 foto sekaligus dari galeri/kamera untuk terisi otomatis.</p>
+        <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: 6px;">Pilih hingga 12 foto sekaligus (2 Packing Tag + 10 Panel Mobil).</p>
 
         <div class="photo-grid">
+          <!-- 2 SLOT PACKING TAG PERTAMA -->
+          <div class="photo-box tag-box">
+            <span>Packing Tag 1</span>
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('tag1', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('tag1', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-tag1-cam" accept="image/*" capture="environment" onchange="previewPhoto('tag1', 'cam')">
+            <input type="file" id="file-tag1-gal" accept="image/*" onchange="previewPhoto('tag1', 'gal')">
+            <img id="img-tag1" class="photo-preview">
+          </div>
+
+          <div class="photo-box tag-box">
+            <span>Packing Tag 2</span>
+            <div class="btn-photo-group">
+              <button class="btn-upload" onclick="triggerPhoto('tag2', 'cam')">📷 Kamera</button>
+              <button class="btn-upload" onclick="triggerPhoto('tag2', 'gal')">🖼️ Galeri</button>
+            </div>
+            <input type="file" id="file-tag2-cam" accept="image/*" capture="environment" onchange="previewPhoto('tag2', 'cam')">
+            <input type="file" id="file-tag2-gal" accept="image/*" onchange="previewPhoto('tag2', 'gal')">
+            <img id="img-tag2" class="photo-preview">
+          </div>
+
+          <!-- 10 SLOT PANEL MOBIL -->
           <script>
             for(let i=1; i<=10; i++) {
               document.write(`
                 <div class="photo-box">
                   <span>Panel ${i}</span>
                   <div class="btn-photo-group">
-                    <button class="btn-upload" onclick="triggerPhoto(${i}, 'cam')">📷 Kamera</button>
-                    <button class="btn-upload" onclick="triggerPhoto(${i}, 'gal')">🖼️ Galeri</button>
+                    <button class="btn-upload" onclick="triggerPhoto('panel${i}', 'cam')">📷 Kamera</button>
+                    <button class="btn-upload" onclick="triggerPhoto('panel${i}', 'gal')">🖼️ Galeri</button>
                   </div>
-                  <input type="file" id="file-p${i}-cam" accept="image/*" capture="environment" onchange="previewPhoto(${i}, 'cam')">
-                  <input type="file" id="file-p${i}-gal" accept="image/*" onchange="previewPhoto(${i}, 'gal')">
-                  <img id="img-p${i}" class="photo-preview">
+                  <input type="file" id="file-panel${i}-cam" accept="image/*" capture="environment" onchange="previewPhoto('panel${i}', 'cam')">
+                  <input type="file" id="file-panel${i}-gal" accept="image/*" onchange="previewPhoto('panel${i}', 'gal')">
+                  <img id="img-panel${i}" class="photo-preview">
                 </div>
               `);
             }
@@ -305,6 +330,12 @@
     let isSyncing = false;
     let scannedRawQr = "";
 
+    const allKeysSequence = [
+      "tag1", "tag2",
+      "panel1", "panel2", "panel3", "panel4", "panel5",
+      "panel6", "panel7", "panel8", "panel9", "panel10"
+    ];
+
     window.onload = function() {
       const savedOp = localStorage.getItem("operator");
       const savedDept = localStorage.getItem("department");
@@ -365,8 +396,7 @@
           const fullQrText = result.text.trim();
           scannedRawQr = fullQrText;
           
-          let cleanVin = fullQrText.split("*")[0].trim();
-          cleanVin = cleanVin.replace(/^NCP-BIP-/i, "");
+          let cleanVin = fullQrText.split("*")[0].trim().replace(/^NCP-BIP-/i, "");
 
           document.getElementById("vin-number").value = cleanVin;
           stopScanner();
@@ -430,20 +460,21 @@
       const files = Array.from(input.files);
       if (!files.length) return;
 
-      showModal('loading', 'Mengompres Foto', `Memproses ${Math.min(files.length, 10)} foto...`);
+      const totalToProcess = Math.min(files.length, 12);
+      showModal('loading', 'Mengompres Foto', `Memproses ${totalToProcess} foto...`);
 
       let processedCount = 0;
-      const totalToProcess = Math.min(files.length, 10);
 
-      files.slice(0, 10).forEach((file, index) => {
-        const panelNum = index + 1;
-        const panelKey = `panel${panelNum}`;
-        const imgPreview = document.getElementById(`img-p${panelNum}`);
+      files.slice(0, 12).forEach((file, index) => {
+        const key = allKeysSequence[index];
+        const imgPreview = document.getElementById(`img-${key}`);
 
         compressImage(file, 1024, 1024, 0.55, function(compressedBase64) {
-          imgPreview.src = compressedBase64;
-          imgPreview.style.display = "block";
-          photoData[panelKey] = { base64: compressedBase64 };
+          if (imgPreview) {
+            imgPreview.src = compressedBase64;
+            imgPreview.style.display = "block";
+          }
+          photoData[key] = { base64: compressedBase64 };
 
           processedCount++;
           if (processedCount === totalToProcess) {
@@ -453,21 +484,25 @@
       });
     }
 
-    function triggerPhoto(panelNum, type) {
-      document.getElementById(`file-p${panelNum}-${type}`).click();
+    function triggerPhoto(key, type) {
+      const elId = typeof key === 'number' ? `file-panel${key}-${type}` : `file-${key}-${type}`;
+      document.getElementById(elId).click();
     }
 
-    function previewPhoto(panelNum, type) {
-      const fileInput = document.getElementById(`file-p${panelNum}-${type}`);
-      const imgPreview = document.getElementById(`img-p${panelNum}`);
+    function previewPhoto(key, type) {
+      const targetKey = typeof key === 'number' ? `panel${key}` : key;
+      const fileInput = document.getElementById(`file-${targetKey}-${type}`);
+      const imgPreview = document.getElementById(`img-${targetKey}`);
       
-      if (fileInput.files && fileInput.files[0]) {
+      if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         
         compressImage(file, 1024, 1024, 0.55, function(compressedBase64) {
-          imgPreview.src = compressedBase64;
-          imgPreview.style.display = "block";
-          photoData[`panel${panelNum}`] = { base64: compressedBase64 };
+          if (imgPreview) {
+            imgPreview.src = compressedBase64;
+            imgPreview.style.display = "block";
+          }
+          photoData[targetKey] = { base64: compressedBase64 };
         });
       }
     }
@@ -572,7 +607,7 @@
       isSyncing = true;
       updateQueueBadge();
 
-      // PERBAIKAN UTAMA: Ambil item pertama TANPA langsung menghapusnya
+      // Ambil item pertama TANPA langsung menghapusnya
       const item = queue[0];
 
       try {
@@ -642,17 +677,18 @@
       setStatus("OK");
       photoData = {};
 
-      for(let i=1; i<=10; i++) {
-        const camInput = document.getElementById(`file-p${i}-cam`);
-        const galInput = document.getElementById(`file-p${i}-gal`);
-        const img = document.getElementById(`img-p${i}`);
+      allKeysSequence.forEach((key) => {
+        const camInput = document.getElementById(`file-${key}-cam`);
+        const galInput = document.getElementById(`file-${key}-gal`);
+        const img = document.getElementById(`img-${key}`);
         if (camInput) camInput.value = "";
         if (galInput) galInput.value = "";
         if (img) {
           img.src = "";
           img.style.display = "none";
         }
-      }
+      });
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
